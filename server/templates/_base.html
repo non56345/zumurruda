@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#111012">
+<title>{% block title %}{% endblock %} | لوحة تحكم الزُمردة</title>
+<link rel="icon" type="image/png" href="/images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111012;--gold:#c9a46a;--gold-l:#e8cfa0;--emerald:#0a6b3a;--emerald-d:#064d2a;--cream:#f8f2e9;--text:#2a2628;--muted:#6f676b;--line:#e8dfd0;--danger:#b3261e;--danger-bg:#fdecea;--ok-bg:#e6f4ec;
+--font-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif;--font-display:"El Messiri","Traditional Arabic",serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);color:var(--text);line-height:1.75;font-size:16px;min-height:100vh;display:grid;place-items:center;padding:24px 16px;
+background:radial-gradient(circle at 20% 10%,#16281e 0,#111012 55%)}
+.box{width:100%;max-width:420px;background:#fffdf9;border-radius:20px;border:1px solid rgba(201,164,106,.4);box-shadow:0 30px 70px -30px rgba(0,0,0,.8);padding:32px 26px}
+.logo{width:76px;height:76px;border-radius:50%;margin:0 auto 12px;background:var(--ink);border:1px solid rgba(201,164,106,.6);display:grid;place-items:center;overflow:hidden}
+.logo img{width:100%;height:100%;object-fit:contain;padding:6px}
+h1{font-family:var(--font-display);text-align:center;font-size:1.6rem;color:var(--ink);line-height:1.3}
+.sub{text-align:center;color:var(--muted);font-size:.9rem;margin-bottom:22px}
+label{display:block;font-weight:600;font-size:.92rem;margin-bottom:4px}
+input{width:100%;padding:.7em .9em;border:1.5px solid var(--line);border-radius:12px;background:#fff;font:inherit;color:inherit;min-height:46px}
+input:focus-visible{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+.f{margin-bottom:16px}
+.btn{display:flex;width:100%;align-items:center;justify-content:center;min-height:46px;border:0;border-radius:999px;cursor:pointer;font:inherit;font-weight:600;color:#fff;background:linear-gradient(145deg,var(--emerald),var(--emerald-d));box-shadow:0 8px 20px -10px rgba(6,77,42,.9)}
+.msg{padding:.7em .9em;border-radius:12px;margin-bottom:16px;font-size:.92rem}
+.err{background:var(--danger-bg);color:var(--danger);border:1px solid rgba(179,38,30,.25)}
+.ok{background:var(--ok-bg);color:var(--emerald-d);border:1px solid rgba(10,107,58,.25)}
+.hint{font-size:.82rem;color:var(--muted);margin-top:4px}
+.back{display:block;text-align:center;margin-top:16px;color:var(--emerald);font-size:.92rem;text-decoration:none}
+</style>
+</head>
+<body>
+<main class="box">
+  <div class="logo"><img src="/images/logo.png" alt="شعار الزُمردة"></div>
+  {% block body %}{% endblock %}
+</main>
+</body>
+</html>

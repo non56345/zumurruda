@@ -1,0 +1,1157 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>الزُمردة | بيوتي سنتر – اجدابيا</title>
+<meta name="description" content="نموذج أولي لموقع مركز متكامل للعناية والجمال والأنشطة النسائية.">
+<meta name="theme-color" content="#111012">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* =====================================================
+   الألوان والمتغيرات — عدّليها من هنا فقط
+   ===================================================== */
+:root{
+  --ink:#111012;        /* أسود الشعار */
+  --ink-2:#1b191d;
+  --gold:#c9a46a;       /* ذهبي الشعار */
+  --gold-d:#a67c45;
+  --gold-l:#e8cfa0;
+  --cream:#f8f2e9;      /* درجة الجدران والخشب الفاتح */
+  --paper:#fffdf9;
+  --wine:#6b1d3c;      /* لون مفرش الكافيه */
+  --lav:#7a5fa5;       /* بنفسجي الإضاءة والتفاصيل */
+  --emerald:#0a6b3a;    /* زمردي الشعار */
+  --emerald-d:#064d2a;
+  --emerald-l:#1f9a5c;
+  --text:#2a2628;
+  --muted:#6f676b;
+  --gold-grad:linear-gradient(135deg,#ecd0a0 0%,#c9a46a 50%,#a67c45 100%);
+  --radius:16px;
+  --font-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif;
+  --font-display:"El Messiri","Traditional Arabic",serif;
+  --font-latin:"Cormorant Garamond",Georgia,serif;
+  --shadow:0 18px 50px -18px rgba(17,16,18,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{font-family:var(--font-body);background:var(--paper);color:var(--text);line-height:1.85;font-size:16.5px;font-weight:400;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.wrap{width:min(1180px,100% - 40px);margin-inline:auto}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+svg.i{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+svg.i.f{fill:currentColor;stroke:none}
+
+/* ---------- أزرار ---------- */
+.btn{display:inline-flex;align-items:center;gap:.6em;padding:.9em 1.9em;border-radius:999px;font-weight:600;font-size:.98rem;letter-spacing:.01em;transition:transform .25s,box-shadow .25s,background .25s,color .25s}
+.btn-gold{background:var(--gold-grad);color:#1a1410;box-shadow:0 10px 26px -10px rgba(201,164,106,.8)}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 16px 32px -10px rgba(201,164,106,.9)}
+.btn-line{border:1.5px solid rgba(232,207,160,.55);color:var(--gold-l)}
+.btn-line:hover{background:rgba(232,207,160,.12)}
+.btn-dark{background:var(--ink);color:var(--gold-l)}
+.btn-dark:hover{transform:translateY(-2px)}
+
+/* ---------- عناوين الأقسام ---------- */
+.sec{padding:104px 0}
+.eyebrow{display:inline-flex;align-items:center;gap:.8em;color:var(--gold-d);font-weight:500;font-size:.88rem;letter-spacing:.08em}
+.eyebrow::before{content:"";width:34px;height:1.5px;background:var(--gold-grad)}
+.h2{font-family:var(--font-display);font-size:clamp(1.9rem,3.8vw,2.8rem);line-height:1.4;color:var(--ink);margin:.4em 0 .5em;font-weight:600;letter-spacing:-.005em}
+.lead{color:var(--muted);max-width:640px}
+
+/* ---------- الترويسة ---------- */
+header.nav{position:fixed;inset:0 0 auto 0;z-index:50;transition:background .3s,box-shadow .3s,padding .3s;padding:18px 0}
+header.nav.solid{padding:10px 0}
+header.nav.solid{background:rgba(17,16,18,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:10px 0;box-shadow:0 6px 30px -12px #000}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:12px;color:var(--gold-l)}
+.brand-mark{width:46px;height:46px;border-radius:50%;background:var(--ink);border:1px solid rgba(201,164,106,.5);overflow:hidden;display:grid;place-items:center;position:relative}
+.brand-mark img{width:100%;height:100%;object-fit:contain}
+.brand-txt{display:flex;flex-direction:column;line-height:1.15}
+.brand-txt b{font-family:var(--font-display);font-weight:600;font-size:1.5rem;letter-spacing:0;color:#fff;direction:ltr}
+.brand-txt small{font-size:.78rem;color:var(--gold)}
+.links{display:flex;gap:6px;align-items:center}
+.links a{padding:.45em 1em;border-radius:999px;color:#efe6d6;font-weight:500;font-size:.96rem;transition:background .25s,color .25s}
+.links a:hover,.links a.act{background:rgba(232,207,160,.14);color:var(--gold-l)}
+.links .btn{padding:.5em 1.3em;margin-inline-start:8px;color:#1a1410}
+.burger{display:none;width:44px;height:44px;border-radius:50%;border:1px solid rgba(232,207,160,.4);color:var(--gold-l);place-items:center}
+.burger svg{width:22px;height:22px}
+
+/* ---------- الواجهة الرئيسية ---------- */
+.hero{position:relative;background:var(--ink);color:#fff;padding:140px 0 90px;overflow:hidden;isolation:isolate}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;background:
+  radial-gradient(60% 55% at 18% 30%,rgba(201,164,106,.20),transparent 70%),
+  radial-gradient(45% 45% at 85% 80%,rgba(10,107,58,.38),transparent 70%)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,640px);gap:56px;align-items:center;position:relative}
+.hero .eyebrow{color:var(--gold)}
+.hero h1{font-family:var(--font-display);font-size:clamp(2.3rem,5vw,3.8rem);line-height:1.35;margin:.3em 0 .45em;font-weight:600}
+.hero h1 em{font-style:normal;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.sub{color:#d9d0c3;max-width:540px;font-size:1.05rem;font-weight:300;border-inline-start:2px solid rgba(201,164,106,.5);padding-inline-start:16px}
+.cta{display:flex;flex-wrap:wrap;gap:14px;margin:32px 0 36px}
+.tags{display:flex;flex-wrap:wrap;gap:10px}
+.tags span{font-size:.88rem;padding:.35em 1em;border-radius:999px;border:1px solid rgba(232,207,160,.28);color:var(--gold-l);background:rgba(255,255,255,.03)}
+.arch{position:relative;width:min(420px,100%);margin-inline:auto;aspect-ratio:3/4}
+.arch::before{content:"";position:absolute;inset:-14px -14px 14px 14px;border:1.5px solid rgba(201,164,106,.55);border-radius:999px 999px 30px 30px}
+.arch .ph{position:absolute;inset:0;border-radius:999px 999px 30px 30px;box-shadow:0 40px 80px -30px #000}
+.float{position:absolute;inset-inline-start:-26px;bottom:42px;background:rgba(255,253,249,.96);color:var(--ink);padding:14px 18px;border-radius:18px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:center;max-width:230px;animation:bob 6s ease-in-out infinite}
+.float .dot{width:40px;height:40px;border-radius:50%;background:var(--gold-grad);display:grid;place-items:center;color:#1a1410;flex:none}
+.float b{display:block;font-size:.95rem;line-height:1.4}
+.float small{color:var(--muted);font-size:.8rem;line-height:1.4;display:block}
+@keyframes bob{50%{transform:translateY(-8px)}}
+
+/* ---------- صور (Slots) ---------- */
+.ph{position:relative;overflow:hidden;background:linear-gradient(140deg,#2a2328,#40303a 55%,#5a4338)}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s,transform .8s}
+.ph.has img{opacity:1}
+.ph.missing::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(circle at 25% 20%,rgba(232,207,160,.18),transparent 45%),
+  repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 12px,transparent 12px 24px)}
+.ph.missing::after{content:attr(data-label);position:absolute;inset:auto 14px 14px 14px;text-align:center;font-size:.8rem;color:var(--gold-l);background:rgba(17,16,18,.55);border:1px dashed rgba(232,207,160,.45);border-radius:12px;padding:.5em .8em;line-height:1.5}
+.brand-mark.ph.missing::before{display:none}
+.brand-mark.ph.missing::after{content:"";position:static;inset:auto;border:0;padding:0;border-radius:0;width:24px;height:24px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c9a46a' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M6 3h12l3 6-9 12L3 9z'/%3E%3Cpath d='M3 9h18M9 3l3 18 3-18'/%3E%3C/svg%3E") center/contain no-repeat}
+.tile .ph.missing::after{inset:14px 14px auto 14px}
+.brand-mark.ph{background:var(--ink)}
+
+/* ---------- من نحن ---------- */
+.about{background:var(--cream)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.about-photos{position:relative;aspect-ratio:1/1}
+.about-photos .ph{position:absolute;border-radius:26px;box-shadow:var(--shadow)}
+.about-photos .a{inset:0 22% 18% 0}
+.about-photos .b{inset:32% 0 0 30%;border:6px solid var(--cream)}
+.vals{display:grid;gap:16px;margin-top:28px}
+.val{display:flex;gap:16px;align-items:flex-start}
+.val .ic{width:46px;height:46px;border-radius:14px;background:var(--ink);color:var(--gold);display:grid;place-items:center;flex:none}
+.val h3{font-size:1.05rem;color:var(--ink);line-height:1.5}
+.val p{color:var(--muted);font-size:.95rem;line-height:1.7}
+
+/* ---------- الخدمات ---------- */
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:40px}
+.sub-title{display:flex;align-items:center;gap:12px;margin:0 0 18px;font-size:1.2rem;color:var(--ink);font-weight:700}
+.sub-title .ic{width:40px;height:40px;border-radius:12px;background:var(--gold-grad);color:#1a1410;display:grid;place-items:center}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:56px}
+.tile{position:relative;aspect-ratio:3/4;border-radius:var(--radius);overflow:hidden;text-align:start;display:block;width:100%;color:#fff}
+.tile .ph{position:absolute;inset:0}
+.tile:hover .ph img{transform:scale(1.06)}
+.tile .cap{position:absolute;inset:auto 0 0 0;padding:60px 18px 18px;background:linear-gradient(to top,rgba(10,9,10,.92),rgba(10,9,10,.55) 55%,transparent)}
+.tile h3{font-size:1.1rem;line-height:1.4;font-weight:700}
+.tile h3 span{display:block;font-size:.75rem;color:var(--gold-l);letter-spacing:.06em;direction:ltr;text-align:right;font-weight:500}
+.tile p{font-size:.86rem;color:#e3dacb;line-height:1.6;margin-top:4px}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.card{position:relative;background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:0 18px 40px -30px rgba(17,16,18,.35);display:flex;flex-direction:column;transition:transform .3s,box-shadow .3s;border:1px solid rgba(201,164,106,.18)}
+.card:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
+.card .ph{aspect-ratio:4/3.2}
+.card:hover .ph img{transform:scale(1.05)}
+.card-b{padding:22px 22px 24px;display:flex;flex-direction:column;gap:8px;flex:1;position:relative}
+.card-b .ic{position:absolute;top:-24px;inset-inline-end:20px;width:48px;height:48px;border-radius:50%;background:var(--ink);color:var(--gold);display:grid;place-items:center;border:3px solid #fff}
+.card h3{font-family:var(--font-display);font-size:1.5rem;color:var(--ink);line-height:1.4}
+.card p{color:var(--muted);font-size:.96rem;line-height:1.75}
+.card .more{margin-top:auto;padding-top:10px;color:var(--gold-d);font-weight:700;display:inline-flex;gap:.5em;align-items:center}
+.card .more:hover{color:var(--ink)}
+.card .more svg{transition:transform .25s}
+.card .more:hover svg{transform:translateX(-4px)}
+
+
+/* ---------- المعرض ---------- */
+.gallery{background:var(--ink);color:#fff}
+.gallery .h2{color:#fff}
+.gallery .lead{color:#bdb3a8}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{padding:.45em 1.2em;border-radius:999px;border:1px solid rgba(232,207,160,.3);color:#e9dfcf;font-size:.92rem;transition:all .25s}
+.chip:hover{border-color:var(--gold)}
+.chip[aria-pressed="true"]{background:var(--gold-grad);color:#1a1410;border-color:transparent;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.g{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:4/5;display:block;width:100%}
+.g .ph{position:absolute;inset:0}
+.g:hover .ph img{transform:scale(1.07)}
+.g .cap{position:absolute;inset:auto 0 0 0;padding:40px 16px 14px;background:linear-gradient(to top,rgba(10,9,10,.85),transparent);font-size:.92rem;text-align:start;opacity:0;transform:translateY(8px);transition:all .3s}
+.g:hover .cap,.g:focus-visible .cap{opacity:1;transform:none}
+.g[hidden]{display:none}
+@media (hover:none){.g .cap{opacity:1;transform:none}}
+
+/* متجر أوبال */
+.opal{background:#fff}
+.opal .sec-head .lead{max-width:440px}
+.og{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.og .o{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:3/4;display:block;width:100%;box-shadow:0 18px 40px -24px rgba(17,16,18,.45)}
+.og .o .ph{position:absolute;inset:0}
+.og .o:hover .ph img{transform:scale(1.06)}
+.og .o .cap{position:absolute;inset:auto 0 0 0;padding:40px 14px 12px;background:linear-gradient(to top,rgba(10,9,10,.8),transparent);color:#fff;font-size:.88rem;text-align:start}
+.opal-tag{display:inline-block;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:1.25rem;color:var(--gold-d);margin-inline-start:.4em}
+.opal-cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;margin-top:30px}
+.opal-cta p{color:var(--muted);font-size:.95rem;margin:0}
+@media (max-width:980px){.og{grid-template-columns:repeat(2,1fr);gap:10px}}
+
+/* نافذة العرض */
+.lb{position:fixed;inset:0;z-index:100;background:rgba(8,7,8,.94);display:none;align-items:center;justify-content:center;padding:24px}
+.lb.on{display:flex}
+.lb figure{max-width:min(92vw,760px);max-height:86vh;display:flex;flex-direction:column;align-items:center;gap:14px}
+.lb img{max-height:76vh;width:auto;border-radius:14px;box-shadow:0 30px 80px -20px #000}
+.lb figcaption{color:var(--gold-l);text-align:center}
+.lb .none{padding:60px 40px;border:1px dashed rgba(232,207,160,.45);border-radius:16px;color:var(--gold-l);text-align:center;max-width:420px;line-height:1.9}
+.lb-btn{position:absolute;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.08);color:#fff;display:grid;place-items:center;transition:background .25s}
+.lb-btn:hover{background:rgba(201,164,106,.5)}
+.lb-x{top:18px;inset-inline-end:18px}
+.lb-prev{inset-inline-start:auto;right:18px;top:50%;transform:translateY(-50%)}
+.lb-next{left:18px;top:50%;transform:translateY(-50%)}
+
+/* ---------- المناسبات ---------- */
+.events{background:linear-gradient(135deg,#4a1329 0%,var(--wine) 55%,#3a0f22 100%);color:#fff;position:relative;overflow:hidden}
+.events::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(circle at 10% 15%,rgba(232,207,160,.16) 0 3px,transparent 4px) 0 0/90px 90px,
+  radial-gradient(circle at 70% 60%,rgba(232,207,160,.12) 0 2px,transparent 3px) 0 0/60px 60px;pointer-events:none}
+.events-grid{position:relative;display:grid;grid-template-columns:1fr .9fr;gap:60px;align-items:center}
+.events .eyebrow{color:var(--gold-l)}
+.events .h2{color:#fff}
+.events p{color:#ecd9df;max-width:560px}
+.occ{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 30px}
+.occ span{padding:.4em 1.1em;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(232,207,160,.3);font-size:.92rem}
+.events .ph{aspect-ratio:4/4.4;border-radius:200px 200px 26px 26px;box-shadow:0 40px 80px -30px #000;border:1px solid rgba(232,207,160,.35)}
+.note{font-size:.86rem;color:#d7bcc7;margin-top:16px}
+
+/* ---------- التواصل ---------- */
+.contact{background:var(--cream)}
+.contact-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:48px;align-items:start}
+.ways{display:grid;gap:14px;margin-top:28px}
+.way{display:flex;align-items:center;gap:16px;padding:16px 18px;background:#fff;border-radius:18px;border:1px solid rgba(201,164,106,.28);text-align:start;width:100%;transition:transform .25s,box-shadow .25s}
+.way:hover{transform:translateX(-4px);box-shadow:var(--shadow)}
+.way .ic{width:48px;height:48px;border-radius:14px;background:var(--ink);color:var(--gold);display:grid;place-items:center;flex:none}
+.way b{display:block;color:var(--ink);line-height:1.4}
+.way small{color:var(--muted);font-size:.86rem;line-height:1.5;display:block}
+.way.empty small{color:#a2692b}
+.form{background:#fff;border-radius:26px;padding:30px;box-shadow:var(--shadow);border:1px solid rgba(201,164,106,.22)}
+.form h3{font-family:var(--font-display);font-size:1.7rem;color:var(--ink);line-height:1.4;margin-bottom:4px}
+.form > p{color:var(--muted);font-size:.94rem;margin-bottom:20px}
+.f{display:grid;gap:6px;margin-bottom:16px}
+.f label{font-weight:700;font-size:.92rem;color:var(--ink)}
+.f input,.f select,.f textarea{font:inherit;padding:.8em 1em;border:1.5px solid #e4d9c7;border-radius:14px;background:var(--paper);color:var(--text);width:100%;transition:border .2s,box-shadow .2s}
+.f textarea{min-height:110px;resize:vertical}
+.f input:focus,.f select:focus,.f textarea:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 4px rgba(201,164,106,.2)}
+.preview{margin-top:18px;padding:14px 16px;background:var(--cream);border-radius:14px;border-inline-start:4px solid var(--gold);font-size:.94rem;white-space:pre-wrap;display:none}
+.preview.on{display:block}
+.preview small{display:block;color:var(--muted);margin-bottom:4px;font-weight:700}
+
+/* ---------- لمسات إضافية ---------- */
+.stats{display:flex;gap:28px;margin:0 0 22px}
+.stats div{display:flex;flex-direction:column;line-height:1.2}
+.stats b{font-family:var(--font-latin);font-weight:600;font-size:2.4rem;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stats small{color:#cbbfae;font-size:.85rem}
+.day{background:var(--paper);position:relative}
+.steps{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:46px;position:relative}
+.steps::before{content:"";position:absolute;top:64px;inset-inline:12%;height:1.5px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.6}
+.steps li{position:relative;background:#fff;border:1px solid rgba(201,164,106,.25);border-radius:var(--radius);padding:26px 20px;text-align:center;box-shadow:0 10px 30px -22px rgba(17,16,18,.5);transition:transform .3s}
+.steps li:hover{transform:translateY(-6px)}
+.steps .n{position:absolute;top:14px;inset-inline-start:16px;font-family:var(--font-latin);color:var(--gold-d);font-size:1rem;opacity:.7}
+.steps .ic{width:64px;height:64px;margin:0 auto 14px;border-radius:50%;background:var(--ink);color:var(--gold);display:grid;place-items:center;font-size:1.3rem;border:4px solid var(--cream);position:relative}
+.steps b{display:block;color:var(--ink);font-size:1.05rem}
+.steps small{color:var(--muted);font-size:.9rem}
+.wa{position:fixed;bottom:22px;left:22px;z-index:90;display:flex;align-items:center;gap:.5em;background:var(--gold-grad);color:#1a1410;font-weight:800;padding:.8em 1.2em;border-radius:999px;box-shadow:0 14px 30px -10px rgba(201,164,106,.9);animation:pulse 2.6s infinite}
+.wa svg{width:22px;height:22px}
+@keyframes pulse{0%,100%{box-shadow:0 14px 30px -10px rgba(201,164,106,.9)}50%{box-shadow:0 14px 40px -6px rgba(201,164,106,1)}}
+@media (max-width:980px){.steps{grid-template-columns:repeat(2,1fr)}.steps::before{display:none}}
+@media (max-width:620px){.wa span{display:none}.wa{padding:.85em}.stats{gap:20px}}
+
+.mood{background:var(--ink);color:#fff}
+.mood .h2{color:#fff}.mood .lead{color:#bdb3a8}
+.moods{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:34px 0 30px}
+.md{display:flex;align-items:center;gap:.5em;padding:.8em 1.4em;border-radius:999px;border:1px solid rgba(232,207,160,.35);color:#efe6d6;font-weight:700;transition:all .25s}
+.md span{font-size:1.2rem}
+.md:hover{border-color:var(--gold)}
+.md[aria-pressed="true"]{background:var(--gold-grad);color:#1a1410;border-color:transparent;transform:translateY(-2px)}
+.plan{max-width:860px;margin:0 auto;background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(232,207,160,.25);border-radius:26px;padding:28px}
+.plan h3{font-family:var(--font-display);font-size:1.7rem;color:var(--gold-l);margin-bottom:4px}
+.plan p{color:#cbbfae;margin-bottom:18px}
+.route{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.route span{background:rgba(201,164,106,.14);border:1px solid rgba(232,207,160,.3);padding:.5em 1.1em;border-radius:14px;color:#f3e7d3}
+.route i{color:var(--gold);font-style:normal}
+.plan .btn{margin-top:22px}
+.plan.flash{animation:fl .5s}
+@keyframes fl{from{opacity:.3;transform:translateY(8px)}to{opacity:1;transform:none}}
+.gift{background:var(--cream)}
+.gift-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.gift .f{max-width:420px}
+.gcard-wrap{perspective:1200px}
+.gcard{
+  aspect-ratio:1242 / 647;
+  width:100%;
+  max-width:620px;
+  margin-inline:auto;
+  padding:0;
+  border-radius:0;
+  background-image:url("images/zumurruda_gift_card_page_1.png");
+  background-size:100% 100%;
+  background-position:center;
+  background-repeat:no-repeat;
+  box-shadow:none;
+  border:0;
+  position:relative;
+  overflow:hidden;
+  transform:none;
+}
+
+.gcard::before,
+.gcard::after {
+  display: none !important;
+}
+.gcard:hover{transform:none}
+.gift form .f small.ferr{display:none;color:#b3261e;font-size:.82rem;line-height:1.5}
+.gift form .f.bad small.ferr{display:block}
+.gift form .f.bad input,.gift form .f.bad select,.gift form .f.bad textarea{border-color:#b3261e;background:#fdf3f2}
+.gift form .f textarea{min-height:84px}
+.gift .gh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);opacity:0;pointer-events:none}
+.gmsg{display:none;margin-top:16px;padding:.85em 1.1em;border-radius:14px;font-size:.93rem;line-height:1.7;max-width:420px}
+.gmsg.ok{display:block;background:#e6f4ec;color:#064d2a;border:1px solid rgba(10,107,58,.3)}
+.gmsg.err{display:block;background:#fdecea;color:#b3261e;border:1px solid rgba(179,38,30,.3)}
+#gsend[disabled]{opacity:.6;pointer-events:none}
+.gcard::before{content:"";position:absolute;inset:auto -40% -60% auto;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(201,164,106,.35),transparent 65%)}
+.gc-top{display:flex;justify-content:space-between;align-items:center}
+
+.gc-brand{font-family:var(--font-display);font-weight:600;font-size:1.2rem}
+.gc-tag{font-size:.8rem;color:var(--gold-l);border:1px solid rgba(232,207,160,.4);padding:.2em .8em;border-radius:999px}
+.gc-mid b{
+  display:block;
+  font-family:var(--font-display);
+  font-size:1.5rem;
+  line-height:1.3;
+  position:relative;
+  right:0;
+  width:100%;
+  text-align:right;
+  overflow-wrap:anywhere;
+}
+.gc-mid b{display:block;font-family:var(--font-display);font-size:2rem;line-height:1.3}
+.gc-mid p{color:#d9d0c3;font-size:.95rem}
+.gc-bot{display:flex;justify-content:space-between;align-items:flex-end}
+.gc-bot small{color:#cbbfae}
+.gc-r{font-family:var(--font-display);font-size:2.4rem;line-height:1;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.planner{background:rgba(255,255,255,.06);border:1px solid rgba(232,207,160,.25);border-radius:20px;padding:18px 20px;margin:4px 0 24px;display:grid;gap:14px;max-width:560px}
+.pl-row{display:grid;gap:8px}
+.pl-row>span{font-size:.92rem;color:var(--gold-l)}
+.pl-opts{display:flex;flex-wrap:wrap;gap:8px}
+.pl-opts button{padding:.35em 1em;border-radius:999px;border:1px solid rgba(232,207,160,.3);font-size:.88rem;color:#f3e7d3;transition:all .2s}
+.pl-opts button[aria-pressed="true"]{background:var(--gold-grad);color:#1a1410;border-color:transparent;font-weight:700}
+input[type=range]{accent-color:var(--gold);width:100%}
+@media (max-width:980px){.gift-grid{grid-template-columns:1fr;gap:40px}.gcard{transform:none}}
+
+.prices{background:var(--cream)}
+.ptabs{display:flex;gap:8px;overflow-x:auto;padding:6px 2px 14px;margin:30px 0 18px;scrollbar-width:none;scroll-snap-type:x mandatory}
+.ptabs::-webkit-scrollbar{display:none}
+.pt{flex:none;scroll-snap-align:start;padding:.55em 1.3em;border-radius:999px;border:1px solid rgba(166,124,69,.3);background:transparent;color:var(--ink);font-weight:500;font-size:.93rem;transition:all .25s;white-space:nowrap}
+.pt:hover{border-color:var(--gold)}
+.pt[aria-selected="true"]{background:var(--ink);color:var(--gold-l);border-color:var(--ink)}
+.pbody{min-height:200px}
+.pbody.fade{animation:fl .45s}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.pk{position:relative;background:#fff;border-radius:var(--radius);padding:24px 22px 20px;border:1px solid rgba(201,164,106,.25);display:flex;flex-direction:column;box-shadow:0 10px 30px -24px rgba(17,16,18,.5);transition:transform .3s}
+.pk:hover{transform:translateY(-4px)}
+.pk.star{background:var(--ink);color:#fff;border-color:transparent}
+.pk .bd{position:absolute;top:-11px;inset-inline-start:20px;background:var(--gold-grad);color:#1a1410;font-size:.75rem;font-weight:800;padding:.2em .9em;border-radius:999px}
+.pk h4{font-family:var(--font-display);font-size:1.3rem;font-weight:600;line-height:1.4;color:inherit}
+.pk .pr{font-family:var(--font-latin);font-size:2.3rem;font-weight:600;letter-spacing:.01em;margin:4px 0 12px;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.3}
+.pk .pr small{font-family:var(--font-body);font-size:.85rem;font-weight:500}
+.pk ul{list-style:none;display:grid;gap:6px;margin-bottom:16px;flex:1;align-content:start}
+.pk li{font-size:.92rem;color:var(--muted);display:flex;gap:8px;line-height:1.6}
+.pk.star li{color:#d9d0c3}
+.pk li::before{content:"✓";color:var(--gold-d);font-weight:800;flex:none}
+.ask{align-self:flex-start;display:inline-flex;align-items:center;gap:.4em;font-size:.88rem;font-weight:700;padding:.45em 1.1em;border-radius:999px;border:1.5px solid var(--gold);color:var(--gold-d);transition:all .2s}
+.ask:hover{background:var(--gold-grad);color:#1a1410;border-color:transparent}
+.pk.star .ask{color:var(--gold-l)}
+.plist{background:#fff;border-radius:var(--radius);border:1px solid rgba(201,164,106,.25);padding:6px 22px 10px;margin-bottom:16px}
+.plist h5{font-size:1.05rem;color:var(--ink);padding:16px 0 6px;display:flex;align-items:center;gap:10px}
+.plist h5::before{content:"";width:22px;height:1.5px;background:var(--gold-grad)}
+.prow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px dashed rgba(166,124,69,.25)}
+.prow:last-child{border-bottom:0}
+.prow .nm{flex:1;min-width:0}
+.prow .nm b{display:block;font-weight:500;color:var(--ink);font-size:.98rem;line-height:1.5}
+.prow .nm small{color:var(--muted);font-size:.82rem}
+.prow .pv{font-family:var(--font-latin);font-weight:600;color:var(--gold-d);white-space:nowrap;font-size:1.3rem}
+.prow .ask{padding:.3em .8em;font-size:.8rem}
+.lists{columns:2 360px;column-gap:16px}
+.lists .plist{break-inside:avoid}
+.pnote{margin-top:14px;padding:12px 16px;background:rgba(201,164,106,.12);border-inline-start:3px solid var(--gold);border-radius:12px;font-size:.9rem;color:var(--text)}
+.pfoot{text-align:center;color:var(--muted);font-size:.85rem;margin-top:22px}
+@media (max-width:620px){.prow .ask span{display:none}.prow .ask{padding:.35em .55em}.plist{padding:4px 16px 8px}}
+
+.pk .pr,.prow .pv,.stats b,.steps .n{font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}
+
+/* ---------- شريط الإعلانات والبرومو ---------- */
+.hero{min-height:100svh;display:flex;align-items:center}
+.hero-bg{position:absolute;inset:0;z-index:-2;background:var(--ink)}
+.hero-bg video{width:100%;height:100%;object-fit:cover;display:block}
+.hero::before{background:linear-gradient(270deg,rgba(17,16,18,.88) 0%,rgba(17,16,18,.6) 45%,rgba(17,16,18,.25) 100%),linear-gradient(0deg,rgba(17,16,18,.7),transparent 40%)!important}
+.play-promo[hidden]{display:none}
+.play-promo svg{width:16px;height:16px}
+@media (max-width:980px){.hero::before{background:linear-gradient(0deg,rgba(17,16,18,.92) 0%,rgba(17,16,18,.55) 55%,rgba(17,16,18,.35) 100%)!important}.hero{align-items:flex-end;padding-bottom:56px}}
+
+.ann-t b{font-weight:700}
+.arch .ph video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s}
+.arch .ph.vid video{opacity:1}
+.arch .ph.vid::after,.arch .ph.vid::before{display:none}
+.play{position:absolute;top:22px;inset-inline-end:-10px;display:flex;align-items:center;gap:.6em;background:rgba(17,16,18,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;border:1px solid rgba(232,207,160,.5);padding:.5em 1.1em .5em .6em;border-radius:999px;font-weight:500;font-size:.9rem}
+.play .pl-ic{width:30px;height:30px;border-radius:50%;background:var(--gold-grad);color:#1a1410;display:grid;place-items:center}
+.play .pl-ic svg{width:14px;height:14px}
+.play[hidden]{display:none}
+.lb.vmode .lb-prev,.lb.vmode .lb-next{display:none}
+.lb video{max-height:80vh;max-width:92vw;border-radius:14px;box-shadow:0 30px 80px -20px #000}
+@media (max-width:620px){.hero{padding-top:120px}}
+
+/* ---------- التذييل ---------- */
+footer{background:var(--ink);color:#cfc5b8;padding:56px 0 28px}
+.foot{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;align-items:center;padding-bottom:30px;border-bottom:1px solid rgba(232,207,160,.16)}
+.foot nav{display:flex;flex-wrap:wrap;gap:6px 22px}
+.foot nav a:hover{color:var(--gold-l)}
+.copy{padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:.86rem;color:#8d857b}
+
+.toast{position:fixed;bottom:28px;left:50%;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:.8em 1.4em;border-radius:14px;z-index:120;opacity:0;pointer-events:none;transition:all .35s;max-width:min(92vw,460px);text-align:center;font-size:.94rem;border:1px solid rgba(232,207,160,.4);line-height:1.7}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- حركة الظهور ---------- */
+.js .rv{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s ease}
+.js .rv.in{opacity:1;transform:none}
+.js .rv.d1{transition-delay:.1s}.js .rv.d2{transition-delay:.2s}.js .rv.d3{transition-delay:.3s}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .js .rv{opacity:1;transform:none;transition:none}
+  .float{animation:none}
+}
+
+/* ---------- الاستجابة (Responsive) ---------- */
+@media (max-width:980px){
+  .sec{padding:72px 0}
+  .hero{padding:120px 0 64px}
+  .hero-grid,.about-grid,.events-grid,.contact-grid{grid-template-columns:1fr;gap:44px}
+  .arch{width:min(340px,86%)}
+  .float{inset-inline-start:-6px}
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  .cards{grid-template-columns:1fr 1fr}
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .about-photos{max-width:480px;margin-inline:auto;width:100%}
+  .events .ph{max-width:380px;margin-inline:auto;width:100%}
+  .burger{display:grid}
+  .links{position:fixed;inset:0 0 0 auto;width:min(320px,84vw);height:100dvh;background:var(--ink);flex-direction:column;align-items:stretch;justify-content:center;gap:6px;padding:30px 24px;transform:translateX(100%);transition:transform .4s cubic-bezier(.2,.8,.2,1);border-inline-start:1px solid rgba(232,207,160,.2);visibility:hidden}
+  .links.open{transform:none;visibility:visible}
+  .links a{font-size:1.1rem;padding:.8em 1em}
+  .links .btn{justify-content:center;margin:10px 0 0}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;opacity:0;pointer-events:none;transition:opacity .3s}
+  .scrim.on{opacity:1;pointer-events:auto}
+  header.nav{z-index:60}
+  .links{z-index:70}
+  .burger{position:relative;z-index:80}
+}
+@media (max-width:620px){
+  body{font-size:16px}
+  .tiles{gap:12px}
+  .cards{grid-template-columns:1fr}
+  .grid{gap:10px}
+  .form{padding:22px}
+  .brand-txt small{display:none}
+    .lb-btn{width:44px;height:44px}
+}
+
+/* =====================================================
+   طبقة الهوية البصرية (المرحلة الأولى): ذهبي + زمردي من الشعار
+   ===================================================== */
+::selection{background:var(--gold);color:#1a1410}
+.brand-mark{width:52px;height:52px}
+.brand-mark img{object-fit:contain;padding:4px}
+.hero::before{background:linear-gradient(270deg,rgba(10,12,11,.9) 0%,rgba(10,12,11,.72) 50%,rgba(6,45,28,.5) 100%),linear-gradient(0deg,rgba(17,16,18,.75),transparent 45%)!important}
+.hero-emblem{position:relative;justify-self:center;width:min(380px,100%);aspect-ratio:3/4;display:grid;place-items:center;padding:34px;border-radius:999px 999px 28px 28px;background:linear-gradient(165deg,rgba(17,16,18,.82),rgba(6,77,42,.62));border:1px solid rgba(201,164,106,.55);box-shadow:0 40px 80px -30px #000;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.hero-emblem::before{content:"";position:absolute;inset:-14px 14px 14px -14px;border:1.5px solid rgba(201,164,106,.4);border-radius:inherit;pointer-events:none}
+.hero-emblem img{width:100%;height:auto;filter:drop-shadow(0 10px 30px rgba(0,0,0,.5))}
+@media (min-width:981px){.hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,400px);gap:64px}}
+@media (max-width:980px){
+  .hero::before{background:linear-gradient(0deg,rgba(10,12,11,.94) 0%,rgba(10,12,11,.7) 55%,rgba(6,45,28,.55) 100%)!important}
+  .hero-grid{gap:26px}
+  .hero-emblem{order:-1;justify-self:start;width:112px;padding:14px;border-radius:999px 999px 18px 18px}
+  .hero-emblem::before{inset:-8px 8px 8px -8px}
+}
+/* أيقونات وأزرار وتبويبات بلون الزمرد */
+.val .ic,.way .ic,.steps .ic,.card-b .ic{background:linear-gradient(145deg,var(--emerald),var(--emerald-d));color:var(--gold-l)}
+.btn-dark{background:linear-gradient(145deg,var(--emerald),var(--emerald-d))}
+.pt[aria-selected="true"]{background:var(--emerald-d);border-color:var(--emerald-d)}
+.pk.star{background:linear-gradient(160deg,#0b3a24,#06281a)}
+.mood{background:radial-gradient(60% 80% at 85% 0%,rgba(10,107,58,.38),transparent 70%),var(--ink)}
+footer{border-top:2px solid transparent;border-image:var(--gold-grad) 1;background:radial-gradient(70% 120% at 10% 0%,rgba(10,107,58,.28),transparent 70%),var(--ink)}
+.ph{background:linear-gradient(140deg,#16241c,#1c3a2b 55%,#4a3a26)}
+.tile .ph.missing::after{inset:14px 12px auto 12px;font-size:.85rem}
+/* تحسينات عامة للتجاوب */
+.h2,.lead,.tile h3,.card h3,.pk h4,.way b{overflow-wrap:anywhere}
+.wa{bottom:max(22px,env(safe-area-inset-bottom));left:max(22px,env(safe-area-inset-left))}
+.toast{bottom:max(28px,env(safe-area-inset-bottom))}
+@media (pointer:coarse){.chip,.pt,.ask,.pl-opts button,.md,.btn{min-height:44px}.pl-opts button{display:inline-flex;align-items:center}}
+@media (max-width:620px){
+  .sec{padding:64px 0}
+  .h2{font-size:1.7rem}
+  .tile .cap{padding:44px 12px 12px}
+  .tile h3{font-size:.98rem}
+  .tile p{font-size:.78rem;line-height:1.5}
+  .card h3{font-size:1.3rem}
+  .gcard{padding:20px}
+  .gc-mid b{font-size:1.5rem}
+  .gc-r svg{width:30px;height:30px}
+  .pk .pr{font-size:2rem}
+  .form h3{font-size:1.45rem}
+  .og .o .cap,.g .cap{font-size:.8rem}
+}
+@media (max-width:420px){
+  .wrap{width:min(1180px,100% - 28px)}
+  .steps{grid-template-columns:1fr}
+  .stats{flex-wrap:wrap}
+  .hero h1{font-size:2rem}
+  .btn{padding:.85em 1.5em}
+  .cta .btn{flex:1 1 100%;justify-content:center}
+}
+@media (min-width:1500px){.wrap{width:min(1280px,100% - 80px)}}
+</style>
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<!-- ================= الترويسة ================= -->
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a href="#home" class="brand" aria-label="الرئيسية">
+      <span class="brand-mark ph missing" data-slot="logo"><img alt="شعار المركز"></span>
+      <span class="brand-txt"><b data-site="name">الزُمردة</b><small data-site="pageName">بيوتي سنتر</small></span>
+    </a>
+    <nav class="links" id="links" aria-label="القائمة الرئيسية">
+      <a href="#about">من نحن</a>
+      <a href="#services">الخدمات</a>
+      <a href="#prices">الأسعار</a>
+      <a href="#day">تجربتكِ</a>
+      <a href="#gift">إهداء</a>
+      <a href="#opal">متجر أوبال</a>
+      <a href="#gallery">المعرض</a>
+      <a href="#events">المناسبات</a>
+      <a href="#contact" class="btn btn-gold">تواصلي معنا</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="فتح القائمة" aria-expanded="false" aria-controls="links">
+      <svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+</header>
+<div class="scrim" id="scrim"></div>
+
+<main>
+<!-- ================= الواجهة الرئيسية ================= -->
+<section class="hero" id="home">
+  <div class="hero-bg" aria-hidden="true"><video id="heroVid" autoplay muted loop playsinline webkit-playsinline preload="auto" poster="images/promo-poster.jpg"><source src="images/promo-bg.mp4" type="video/mp4"></video></div>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow rv">مركز متكامل للعناية والجمال والأنشطة النسائية</span>
+      <h1 class="rv d1">جمالكِ ولياقتكِ وراحتكِ،<br><em>في مكان واحد</em></h1>
+      <p class="sub rv d2">عناية بالبشرة والأظافر، جلسات مساج، صالة رياضية، وكافيه هادئ ومساحة لمناسباتكِ الخاصة — كل ذلك تحت هوية واحدة وفي مكان واحد.</p>
+      <div class="cta rv d2">
+        <a href="#services" class="btn btn-gold">استكشفي الخدمات
+          <svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>
+        <a href="#contact" class="btn btn-line">تواصلي معنا</a>
+      </div>
+      <div class="stats rv d3"><div><b>+60</b><small>خدمة وباقة</small></div><div><b>9</b><small>أقسام</small></div><div><b>1</b><small>مكان واحد</small></div></div>
+      <div class="tags rv d3"><span>التجميل والعناية</span><span>الجيم</span><span>الكافيه</span><span>المناسبات</span></div>
+    </div>
+    <div class="hero-emblem rv d2" aria-hidden="true"><img src="images/logo.png" alt="" width="700" height="700"></div>
+  </div>
+</section>
+
+<!-- ================= من نحن ================= -->
+<section class="sec about" id="about">
+  <div class="wrap about-grid">
+    <div class="about-photos rv">
+      <div class="ph missing a" data-slot="care" data-label="صورة المقشرات والأقنعة"><img alt="مقشرات وأقنعة في أوعية خشبية"></div>
+      <div class="ph missing b" data-slot="salon" data-label="صالة التجميل"><img alt="صالة التجميل في المركز"></div>
+    </div>
+    <div>
+      <span class="eyebrow rv">عن المركز</span>
+      <h2 class="h2 rv d1">مساحة تجمع العناية والنشاط والاستراحة</h2>
+      <p class="lead rv d2">يجمع المركز بين خدمات التجميل والعناية، وصالة رياضية، وركن للكافيه، ومساحة للمناسبات الخاصة، ضمن تصميم داخلي هادئ وتفاصيل مدروسة.</p>
+      <div class="vals">
+        <div class="val rv d2"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg></span>
+          <div><h3>عناية متكاملة</h3><p>من البشرة إلى الأظافر والمساج، في أركان مجهّزة ومرتبة.</p></div></div>
+        <div class="val rv d2"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v3M5.6 5.6l2.1 2.1M18.4 5.6l-2.1 2.1M7 14a5 5 0 0110 0v2H7z M5 20h14"/></svg></span>
+          <div><h3>تفاصيل وإضاءة مدروسة</h3><p>ديكور هادئ وإضاءة دافئة تمنحكِ شعوراً بالراحة منذ لحظة الدخول.</p></div></div>
+        <div class="val rv d3"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M6 8v8M3 10v4M18 8v8M21 10v4M6 12h12"/></svg></span>
+          <div><h3>أنشطة متعددة، وجهة واحدة</h3><p>تمرّني، استرخي، وتناولي مشروبكِ المفضل دون الحاجة للتنقل.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= الخدمات ================= -->
+<section class="sec" id="services">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="eyebrow rv">خدماتنا</span>
+        <h2 class="h2 rv d1" style="margin-bottom:0">كل نشاط بطابعه، وكلها بهوية واحدة</h2>
+      </div>
+      <p class="lead rv d2" style="max-width:420px">اضغطي على أي صورة لعرضها بحجم أكبر، أو استفسري مباشرة عن الخدمة التي تهمّكِ.</p>
+    </div>
+
+    <h3 class="sub-title rv"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg></span>التجميل والعناية</h3>
+    <div class="tiles">
+      <button class="tile rv" data-open="skin"><span class="ph missing" data-slot="skin" data-label="الصورة قريبًا"><img alt="جلسة عناية بالبشرة"></span>
+        <span class="cap"><h3>العناية بالبشرة<span>Skin Care</span></h3><p>جلسات عناية بالوجه باستخدام الأجهزة.</p></span></button>
+      <button class="tile rv d1" data-open="nails"><span class="ph missing" data-slot="nails" data-label="صورة ركن الأظافر"><img alt="ركن العناية بالأظافر"></span>
+        <span class="cap"><h3>العناية بالأظافر والقدمين<span>Nails &amp; Feet</span></h3><p>ركن مجهّز بكراسٍ مريحة وأحواض عناية.</p></span></button>
+      <button class="tile rv d2" data-open="massage"><span class="ph missing" data-slot="massage" data-label="الصورة قريبًا"><img alt="أدوات المساج الخشبية"></span>
+        <span class="cap"><h3>المساج بالأدوات الخشبية<span>Wood Therapy</span></h3><p>أدوات خشبية وزيوت وأجواء هادئة.</p></span></button>
+      <button class="tile rv d3" data-open="care"><span class="ph missing" data-slot="care" data-label="صورة المقشرات والأقنعة"><img alt="مقشرات وأقنعة"></span>
+        <span class="cap"><h3>مقشرات وأقنعة<span>Scrubs &amp; Masks</span></h3><p>ماسكات ومقشرات وتجهيزات عناية متكاملة.</p></span></button>
+    </div>
+
+    <div class="cards">
+      <article class="card rv">
+        <div class="ph missing" data-slot="gym" data-label="صورة الصالة الرياضية"><img alt="الصالة الرياضية"></div>
+        
+        <div class="card-b"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M6 8v8M3 10v4M18 8v8M21 10v4M6 12h12"/></svg></span>
+          <h3>الصالة الرياضية (Gym)</h3>
+          <p>صالة واسعة مجهّزة بأجهزة المشي والكارديو، بإضاءة عصرية ومرايا ومساحة تمارين مفتوحة.</p>
+          <a href="#contact" class="more" data-pick="gym">استفسري عن الجيم <svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a></div>
+      </article>
+      <article class="card rv d1">
+        <div class="ph missing" data-slot="cafe" data-label="صورة الكافيه"><img alt="ركن الكافيه"></div>
+        
+        <div class="card-b"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M5 8h11v5a5 5 0 01-5 5h-1a5 5 0 01-5-5zM16 9h2a2 2 0 010 4h-2M8 3v2M12 3v2"/></svg></span>
+          <h3>الكافيه</h3>
+          <p>ركن مريح لتناول الفطور والمشروبات الساخنة والباردة في أجواء هادئة داخل مركز نسائي متكامل.</p>
+          <a href="#contact" class="more" data-pick="cafe">استفسري عن الكافيه <svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= الأسعار ================= -->
+<section class="sec prices" id="prices">
+  <div class="wrap">
+    <div style="text-align:center">
+      <span class="eyebrow rv">قائمة الأسعار</span>
+      <h2 class="h2 rv d1">خدماتنا وأسعارها</h2>
+      <p class="lead rv d2" style="margin-inline:auto">اختاري القسم، واضغطي «استفسري» بجانب أي خدمة لترسلي لنا رسالة جاهزة.</p>
+    </div>
+    <div class="ptabs rv d2" id="ptabs" role="tablist"></div>
+    <div class="pbody" id="pbody" aria-live="polite"></div>
+    <p class="pfoot">الأسعار بالدينار الليبي وقابلة للتحديث من إدارة المركز.</p>
+  </div>
+</section>
+
+<!-- ================= يومكِ ================= -->
+<section class="sec day" id="day">
+  <div class="wrap">
+    <div style="text-align:center">
+      <span class="eyebrow rv">تجربة متكاملة</span>
+      <h2 class="h2 rv d1">يومٌ كامل لكِ.. في زيارة واحدة</h2>
+      <p class="lead rv d2" style="margin-inline:auto">ابدئي بالنشاط، واختمي بالاسترخاء، دون أن تغادري المكان.</p>
+    </div>
+    <ol class="steps">
+      <li class="rv"><span class="n">01</span><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M6 8v8M3 10v4M18 8v8M21 10v4M6 12h12"/></svg></span><b>تمرين في الجيم</b><small>طاقة لبداية يومكِ</small></li>
+      <li class="rv d1"><span class="n">02</span><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M12 20c-4-2-7-5-7-9 3 0 5 1 7 4 2-3 4-4 7-4 0 4-3 7-7 9z"/></svg></span><b>جلسة مساج</b><small>استرخاء بالأدوات الخشبية</small></li>
+      <li class="rv d2"><span class="n">03</span><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg></span><b>عناية بالبشرة والأظافر</b><small>لمسة جمال تكمل يومكِ</small></li>
+      <li class="rv d3"><span class="n">04</span><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M5 8h11v5a5 5 0 01-5 5h-1a5 5 0 01-5-5zM16 9h2a2 2 0 010 4h-2"/></svg></span><b>قهوة في الكافيه</b><small>ختامٌ هادئ ولذيذ</small></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ================= مزاجكِ ================= -->
+<section class="sec mood" id="mood">
+  <div class="wrap">
+    <div style="text-align:center">
+      <span class="eyebrow rv">اختاري مزاجكِ</span>
+      <h2 class="h2 rv d1">كيف تشعرين اليوم؟</h2>
+      <p class="lead rv d2" style="margin-inline:auto">اختاري مزاجكِ، ونقترح عليكِ زيارتكِ المثالية.</p>
+    </div>
+    <div class="moods rv d2" role="group" aria-label="اختيار المزاج">
+      <button class="md" data-m="energy" aria-pressed="true"><span>⚡</span>طاقة ونشاط</button>
+      <button class="md" data-m="relax" aria-pressed="false"><span>🌿</span>أحتاج استرخاء</button>
+      <button class="md" data-m="glam" aria-pressed="false"><span>✨</span>يوم دلال</button>
+      <button class="md" data-m="friends" aria-pressed="false"><span>☕</span>لمّة صديقات</button>
+    </div>
+    <div class="plan rv d3" id="plan" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ================= إهداء ================= -->
+<section class="sec gift" id="gift">
+  <div class="wrap gift-grid">
+    <div>
+      <span class="eyebrow rv">أهدي يومًا جميلًا</span>
+      <h2 class="h2 rv d1">بطاقة إهداء.. لمن تحبين</h2>
+      <p class="lead rv d2">صمّمي بطاقة إهداء لصديقتكِ أو أختكِ أو أمكِ، واختاري التجربة التي تستحقها، ونجهّزها لكِ مغلّفة من ركن تغليف الهدايا.</p>
+      <form id="gform" novalidate>
+        <div class="f rv d2"><label for="gto">إلى</label><input id="gto" name="to" maxlength="22" placeholder="اسم من ستهدينها" autocomplete="off" required><small class="ferr" id="gto-e"></small></div>
+        <div class="f rv d2"><label for="gfrom">من</label><input id="gfrom" name="from" maxlength="22" placeholder="اسمكِ" autocomplete="off" required><small class="ferr" id="gfrom-e"></small></div>
+        <div class="f rv d3"><label for="gsv">الهدية</label>
+          <select id="gsv" name="gift"><option>جلسة الهيدرافيشل</option><option>حمام مغربي VIP</option><option>باقة الأيدي والأقدام VIP</option><option>بديكير مغربي فاخر</option><option>جلسة مساج بالأدوات الخشبية</option></select></div>
+        <div class="f rv d3"><label for="gmsg-t">رسالة على البطاقة (اختياري)</label><textarea id="gmsg-t" name="message" maxlength="120" placeholder="كلمات قصيرة تكتبها لها"></textarea><small class="ferr" id="gmsg-t-e"></small></div>
+        <div class="f rv d3"><label for="gphone">رقم هاتفكِ للتواصل</label><input id="gphone" name="phone" type="tel" inputmode="tel" maxlength="20" placeholder="09XXXXXXXX" autocomplete="tel" dir="ltr" style="text-align:right" required><small class="ferr" id="gphone-e"></small></div>
+        <div class="gh" aria-hidden="true"><label>لا تملأ هذا الحقل<input type="text" name="website" id="gweb" tabindex="-1" autocomplete="off"></label></div>
+        <button class="btn btn-gold rv d3" id="gsend" type="submit">أرسلي طلب البطاقة</button>
+        <p class="gmsg" id="gstatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+    <div class="gcard-wrap rv d2">
+      <div class="gcard" id="gcard" role="img" aria-label="بطاقة إهداء الزُمردة"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= متجر أوبال ================= -->
+<section class="sec opal" id="opal">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="eyebrow rv">من داخل الزُمردة</span>
+        <h2 class="h2 rv d1" style="margin-bottom:0">متجر أوبال<span class="opal-tag">Opal Store</span></h2>
+      </div>
+      <p class="lead rv d2">منتجات عناية وعطور وإكسسوارات مختارة، تُغلَّف بعناية لتكون هدية جاهزة لمن تحبين.</p>
+    </div>
+    <div class="og" id="og"></div>
+    <div class="opal-cta rv">
+      <a href="#contact" class="btn btn-gold" data-pick="opal">استفسري عن منتجات أوبال</a>
+      <p>التوفر والأسعار تتجدد باستمرار — راسلينا لمعرفة المتاح.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= المعرض ================= -->
+<section class="sec gallery" id="gallery">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="eyebrow rv" style="color:var(--gold)">المعرض</span>
+        <h2 class="h2 rv d1" style="margin-bottom:0">لمحات من المكان</h2>
+      </div>
+      <div class="chips rv d2" role="group" aria-label="تصفية المعرض">
+        <button class="chip" data-f="all" aria-pressed="true">الكل</button>
+        <button class="chip" data-f="beauty" aria-pressed="false">التجميل والعناية</button>
+        <button class="chip" data-f="gym" aria-pressed="false">الجيم</button>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<!-- ================= المناسبات ================= -->
+<section class="sec events" id="events">
+  <div class="wrap events-grid">
+    <div>
+      <span class="eyebrow rv">مساحة المناسبات</span>
+      <h2 class="h2 rv d1">مناسبتكِ القادمة، في مكان يليق بها</h2>
+      <p class="rv d2">تفكرين في إقامة عيد ميلاد أو مناسبة خاصة؟ يتيح المركز مساحة يمكن الاستفسار عن تأجيرها. للاطلاع على التفاصيل والتوفر، تواصلي معنا مباشرة.</p>
+      <div class="occ rv d2"><span>أعياد الميلاد</span><span>مناسبات خاصة</span><span>حسب الاستفسار</span></div>
+      <div class="planner rv d3">
+        <div class="pl-row"><span>نوع المناسبة</span><div class="pl-opts" data-k="type"><button aria-pressed="true">عيد ميلاد</button><button aria-pressed="false">توديع عزوبية </button><button aria-pressed="false">تخرّج</button><button aria-pressed="false">لمّة خاصة</button></div></div>
+        <div class="pl-row"><span>عدد الحضور: <b id="plN">20</b></span><input type="range" id="plR" min="5" max="60" step="5" value="20" aria-label="عدد الحضور"></div>
+        <div class="pl-row"><span>إضافات</span><div class="pl-opts multi" data-k="extra"><button aria-pressed="false">ضيافة من الكافيه</button><button aria-pressed="false">تغليف هدايا</button></div></div>
+      </div>
+      <a href="#contact" class="btn btn-gold rv d3" data-pick="events" id="plGo">خطّطي مناسبتكِ
+        <svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>
+      <p class="note rv d3">التفاصيل والشروط تحددها إدارة المركز.</p>
+    </div>
+    <div class="ph missing rv d2" data-slot="events" data-label="صورة مساحة المناسبات"><img alt="مساحة المناسبات"></div>
+  </div>
+</section>
+
+<!-- ================= التواصل ================= -->
+<section class="sec contact" id="contact">
+  <div class="wrap contact-grid">
+    <div>
+      <span class="eyebrow rv">تواصل</span>
+      <h2 class="h2 rv d1">يسعدنا استقبال استفساركِ</h2>
+      <p class="lead rv d2">اختاري الطريقة الأنسب للتواصل، أو جهّزي رسالتكِ من النموذج المجاور.</p>
+      <div class="ways" id="ways">
+        <a class="way rv" data-way="facebook"><span class="ic"><svg class="i f" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></span><span><b>صفحتنا على فيسبوك</b><small>—</small></span></a>
+        <a class="way rv d1" data-way="whatsapp"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M4 20l1.2-4.2A8 8 0 1112 20a8 8 0 01-3.8-1zM9 9c0 3 3 6 6 6l1-1.5-2-1-1 .8c-1-.5-1.8-1.3-2.3-2.3l.8-1-1-2z"/></svg></span><span><b>واتساب</b><small>—</small></span></a>
+        <a class="way rv d2" data-way="map"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 005 9.5C5 14.8 12 21 12 21zM12 12a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"/></svg></span><span><b>موقعنا على الخريطة</b><small>—</small></span></a>
+      </div>
+    </div>
+    <form class="form rv d1" id="form" novalidate>
+      <h3>جهّزي رسالتكِ</h3>
+      <p>اختاري الخدمة واكتبي استفساركِ، وسنجهّز لكِ رسالة جاهزة للإرسال.</p>
+      <div class="f"><label for="fn">الاسم</label><input id="fn" name="n" autocomplete="name" placeholder="اسمكِ الكريم"></div>
+      <div class="f"><label for="fs">الخدمة المطلوبة</label>
+        <select id="fs" name="s">
+          <option value="استفسار عام">استفسار عام</option>
+          <option value="skin">العناية بالبشرة</option>
+          <option value="nails">العناية بالأظافر والقدمين</option>
+          <option value="massage">المساج بالأدوات الخشبية</option>
+          <option value="gym">الصالة الرياضية (Gym)</option>
+          <option value="cafe">الكافيه</option>
+          <option value="events">تأجير مساحة المناسبات</option>
+          <option value="opal">متجر أوبال</option>
+        </select></div>
+      <div class="f"><label for="fm">رسالتكِ</label><textarea id="fm" name="m" placeholder="اكتبي استفساركِ هنا…"></textarea></div>
+      <button type="submit" class="btn btn-dark" style="width:100%;justify-content:center">تجهيز الرسالة</button>
+      <div class="preview" id="preview" aria-live="polite"></div>
+    </form>
+  </div>
+</section>
+</main>
+
+<!-- ================= التذييل ================= -->
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <a href="#home" class="brand"><span class="brand-mark ph missing" data-slot="logo"><img alt="شعار المركز"></span>
+        <span class="brand-txt"><b data-site="name">الزُمردة</b><small data-site="pageName">بيوتي سنتر</small></span></a>
+      <nav aria-label="روابط التذييل"><a href="#about">من نحن</a><a href="#services">الخدمات</a><a href="#gallery">المعرض</a><a href="#events">المناسبات</a><a href="#contact">تواصل</a></nav>
+    </div>
+    <div class="copy"><span>© <span data-site="name">الزُمردة</span> — جميع الحقوق محفوظة</span><span>تصميم وتطوير: فريق 4rame</span></div>
+  </div>
+</footer>
+
+<!-- نافذة عرض الصور -->
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="عرض الصورة">
+  <button class="lb-btn lb-x" id="lbx" aria-label="إغلاق"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <button class="lb-btn lb-prev" id="lbp" aria-label="السابقة"><svg class="i" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+  <button class="lb-btn lb-next" id="lbn" aria-label="التالية"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+  <figure id="lbf"></figure>
+</div>
+
+<a class="wa" id="wa" aria-label="راسلينا على واتساب"><svg class="i" viewBox="0 0 24 24"><path d="M4 20l1.2-4.2A8 8 0 1112 20a8 8 0 01-3.8-1zM9 9c0 3 3 6 6 6l1-1.5-2-1-1 .8c-1-.5-1.8-1.3-2.3-2.3l.8-1-1-2z"/></svg><span>استفسري الآن</span></a>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* =====================================================
+   إعدادات الموقع — كل ما يحتاج تعديلاً لاحقاً موجود هنا
+   ===================================================== */
+const SITE = {
+  name: "الزُمردة",                        // الاسم الظاهر في الشعار
+  pageName: "بيوتي سنتر",                 // السطر الصغير تحت الاسم
+  // فيديو الواجهة: images/promo-bg.mp4 (بدون صوت) وصورته الأولى images/promo-poster.jpg
+  contact: {
+    facebook: "",   // مثال: "https://facebook.com/اسم-الصفحة"
+    whatsapp: "",   // رقم بصيغة دولية بدون + أو أصفار، مثال: "218XXXXXXXXX"
+    map: ""         // رابط الموقع من خرائط جوجل
+  },
+  // مسارات الصور: ضعي الصور داخل مجلد images بهذه الأسماء (أو بدّلي المسارات)
+  images: {
+    logo:      "images/logo.png",
+    nails:     "images/nails.jpg",
+    skin:      "images/skin.jpg",
+    massage:   "images/massage.jpg",
+    care:      "images/care.jpg",
+    gym:       "images/gym.jpg",
+    gym2:      "images/gym2.jpg",
+    gym3:      "images/gym3.jpg",
+    salon:     "images/salon.jpg",
+    opal1:     "images/opal1.jpg",
+    opal2:     "images/opal2.jpg",
+    opal3:     "images/opal3.jpg",
+    opal4:     "images/opal4.jpg",
+    opal5:     "images/opal5.jpg",
+    opal6:     "images/opal6.jpg",
+    cafe:      "images/cafe.jpg",
+    events:    "images/events.jpg"
+  },
+  // عناصر المعرض
+  gallery: [
+    {slot:"salon",   cat:"beauty", cap:"صالة التجميل والمكياج"},
+    {slot:"gym",     cat:"gym",    cap:"الصالة الرياضية"},
+    {slot:"nails",   cat:"beauty", cap:"ركن الأظافر والجل"},
+    {slot:"gym2",    cat:"gym",    cap:"جهاز التمارين المتكامل"},
+    {slot:"care",    cat:"beauty", cap:"ركن العناية والماسكات"},
+    {slot:"gym3",    cat:"gym",    cap:"أجهزة الكارديو"}
+  ],
+  // صور متجر أوبال
+  opal: [
+    {slot:"opal1", cap:"ساعة رجالية أنيقة"},
+    {slot:"opal2", cap:"كريمات البابايا للأيدي والقدمين"},
+    {slot:"opal3", cap:"مستحضرات تجميل بتغليف أنيق"},
+    {slot:"opal4", cap:"باليت ظلال Cookies"},
+    {slot:"opal5", cap:"عطر Narciso"},
+    {slot:"opal6", cap:"عطر Red Tobacco"}
+  ],
+  // نص الخدمات في النموذج
+  serviceNames: {
+    skin:"العناية بالبشرة", nails:"العناية بالأظافر والقدمين", massage:"المساج بالأدوات الخشبية",
+    gym:"الصالة الرياضية (Gym)", cafe:"الكافيه", events:"تأجير مساحة المناسبات", opal:"متجر أوبال"
+  }
+};
+
+/* ---------- أدوات صغيرة ---------- */
+const $  = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const toastEl = $('#toast'); let toastT;
+function toast(msg){ toastEl.textContent = msg; toastEl.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(()=>toastEl.classList.remove('on'), 3800); }
+
+/* ---------- نصوص الموقع ---------- */
+$$('[data-site]').forEach(el => { const v = SITE[el.dataset.site]; if(v) el.textContent = v; });
+
+/* ---------- الصور ---------- */
+const urls = {}, status = {};
+function paint(slot){
+  $$(`[data-slot="${slot}"]`).forEach(f => {
+    const img = $('img', f);
+    if(status[slot]==='ok'){ img.src = urls[slot]; f.classList.add('has'); f.classList.remove('missing'); }
+    else { f.classList.add('missing'); f.classList.remove('has'); }
+  });
+}
+function loadSlot(slot, url){
+  const p = new Image();
+  p.onload  = () => { urls[slot]=url; status[slot]='ok'; paint(slot); };
+  p.onerror = () => { status[slot]='missing'; paint(slot); };
+  p.src = url;
+}
+Object.entries(SITE.images).forEach(([slot,url]) => loadSlot(slot,url));
+
+
+/* ---------- القائمة والترويسة ---------- */
+const nav = $('#nav'), links = $('#links'), burger = $('#burger'), scrim = $('#scrim');
+function setMenu(open){
+  links.classList.toggle('open', open); scrim.classList.toggle('on', open);
+  burger.setAttribute('aria-expanded', open); document.body.style.overflow = open ? 'hidden' : '';
+}
+burger.addEventListener('click', () => setMenu(!links.classList.contains('open')));
+scrim.addEventListener('click', () => setMenu(false));
+$$('#links a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+const onScroll = () => nav.classList.toggle('solid', scrollY > 30);
+addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+/* تمييز القسم الحالي */
+const secs = ['about','services','prices','day','gift','opal','gallery','events','contact'].map(id => document.getElementById(id));
+const navObs = new IntersectionObserver(es => es.forEach(e => {
+  if(e.isIntersecting) $$('#links a:not(.btn)').forEach(a => a.classList.toggle('act', a.getAttribute('href')==='#'+e.target.id));
+}), {rootMargin:'-45% 0px -50% 0px'});
+secs.forEach(s => navObs.observe(s));
+
+/* ---------- حركة الظهور ---------- */
+const rvObs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); rvObs.unobserve(e.target); } }), {threshold:.12});
+$$('.rv').forEach(el => rvObs.observe(el));
+
+/* ---------- المعرض ---------- */
+const grid = $('#grid');
+SITE.gallery.forEach((g,i) => {
+  const b = document.createElement('button');
+  b.className = 'g rv'; b.dataset.cat = g.cat; b.dataset.slot2 = g.slot;
+  b.innerHTML = `<span class="ph missing" data-slot="${g.slot}" data-label="${g.cap}"><img alt="${g.cap}"></span><span class="cap">${g.cap}</span>`;
+  b.addEventListener('click', () => openLb(g.slot));
+  grid.appendChild(b); rvObs.observe(b);
+});
+const og = $('#og');
+SITE.opal.forEach(g => {
+  const b = document.createElement('button');
+  b.className = 'o rv'; b.dataset.slot2 = g.slot;
+  b.innerHTML = `<span class="ph missing" data-slot="${g.slot}" data-label="${g.cap}"><img alt="${g.cap}"></span><span class="cap">${g.cap}</span>`;
+  b.addEventListener('click', () => openLb(g.slot));
+  og.appendChild(b); rvObs.observe(b);
+});
+Object.keys(SITE.images).forEach(paint);
+$$('.chip').forEach(c => c.addEventListener('click', () => {
+  $$('.chip').forEach(x => x.setAttribute('aria-pressed', x===c));
+  const f = c.dataset.f;
+  $$('.g').forEach(g => g.hidden = !(f==='all' || g.dataset.cat===f));
+}));
+
+/* نافذة العرض */
+const lb = $('#lb'), lbf = $('#lbf'); let cur = null, lastFocus = null;
+const visibleSlots = () => $$('.g').filter(g => !g.hidden).map(g => g.dataset.slot2);
+function show(slot){
+  cur = slot; const g = [...SITE.gallery, ...SITE.opal].find(x => x.slot===slot);
+  const cap = g ? g.cap : (SITE.serviceNames[slot] || '');
+  lbf.innerHTML = status[slot]==='ok'
+    ? `<img src="${urls[slot]}" alt="${cap}"><figcaption>${cap}</figcaption>`
+    : `<div class="none">الصورة غير متوفرة بعد.<br>ستُضاف هذه الصورة عند اعتمادها.</div>`;
+}
+function openLb(slot){ lastFocus = document.activeElement; show(slot); lb.classList.add('on'); document.body.style.overflow='hidden'; $('#lbx').focus(); }
+function closeLb(){ const vv=$('video',lbf); if(vv) vv.pause(); lb.classList.remove('on','vmode'); document.body.style.overflow=''; if(lastFocus) lastFocus.focus(); }
+function step(d){
+  let list = cur && cur.startsWith('opal') ? SITE.opal.map(g => g.slot) : visibleSlots(); if(!list.includes(cur)) list = SITE.gallery.map(g => g.slot);
+  const i = list.indexOf(cur); show(list[(i + d + list.length) % list.length]);
+}
+$('#lbx').addEventListener('click', closeLb);
+$('#lbn').addEventListener('click', () => step(1));
+$('#lbp').addEventListener('click', () => step(-1));
+lb.addEventListener('click', e => { if(e.target===lb) closeLb(); });
+addEventListener('keydown', e => {
+  if(e.key==='Escape'){ if(lb.classList.contains('on')) closeLb(); setMenu(false); }
+  if(!lb.classList.contains('on')) return;
+  if(e.key==='ArrowLeft') step(1); if(e.key==='ArrowRight') step(-1);
+});
+let tx = null;
+lb.addEventListener('touchstart', e => tx = e.touches[0].clientX, {passive:true});
+lb.addEventListener('touchend', e => { if(tx===null) return; const dx = e.changedTouches[0].clientX - tx; if(Math.abs(dx)>50) step(dx<0 ? 1 : -1); tx = null; });
+$$('[data-open]').forEach(b => b.addEventListener('click', () => openLb(b.dataset.open)));
+
+/* ---------- التواصل ---------- */
+const ways = {
+  facebook: {url: SITE.contact.facebook, ok:"افتحي صفحتنا على فيسبوك", empty:"رابط الصفحة يُضاف بعد تأكيده"},
+  whatsapp: {url: SITE.contact.whatsapp ? 'https://wa.me/'+SITE.contact.whatsapp : '', ok:"راسلينا مباشرة", empty:"الرقم يُضاف بعد تأكيده"},
+  map:      {url: SITE.contact.map, ok:"افتحي الموقع على الخريطة", empty:"رابط الموقع يُضاف بعد تأكيده"}
+};
+$$('[data-way]').forEach(a => {
+  const w = ways[a.dataset.way], sm = $('small', a);
+  if(w.url){ a.href = w.url; a.target = '_blank'; a.rel = 'noopener'; sm.textContent = w.ok; }
+  else { a.classList.add('empty'); a.setAttribute('role','button'); a.tabIndex = 0; sm.textContent = w.empty;
+    const t = () => toast('يُضاف هذا الرابط عند إطلاق الموقع رسميًا ✨');
+    a.addEventListener('click', t); a.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); t(); } }); }
+});
+
+const wa = $('#wa');
+if(SITE.contact.whatsapp){ wa.href='https://wa.me/'+SITE.contact.whatsapp; wa.target='_blank'; wa.rel='noopener'; }
+else { wa.href='#contact'; }
+const fs = $('#fs');
+const PRICES=[
+{id:'skin',t:'تنظيف البشرة',groups:[{pk:1,items:[
+ {n:'تنظيف البشرة الكلاسيكي',p:'120',inc:['تنظيف البشرة وإزالة الرؤوس السوداء']},
+ {n:'تنظيف + فيتامين C',p:'150',inc:['تنظيف البشرة الكلاسيكي','فيتامين C لنضارة وإشراقة البشرة']},
+ {n:'تنظيف + فيتامينات كاملة',p:'200',inc:['تنظيف البشرة الكلاسيكي','مجموعة فيتامينات متكاملة لتغذية وتجديد البشرة']},
+ {n:'جلسة الهيدرافيشل',p:'250',inc:['هيدرافيشل بعد التنظيف الكلاسيكي'],star:1}]}]},
+{id:'hair-rem',t:'إزالة الشعر',note:'تنظيف أو تحديد الحواجب غير متوفر لدينا.',groups:[
+ {g:'بالدلكة السودانية',items:[{n:'نصف اليدين والرجلين',p:'130'},{n:'الجسم كامل (بدون المناطق الحساسة)',p:'230'}]},
+ {g:'بدون الدلكة السودانية',items:[{n:'نصف الجسم',p:'80'},{n:'الجسم كامل (بدون المناطق الحساسة)',p:'150'}]},
+ {g:'إزالة بالشمع',items:[{n:'نصف اليدين والرجلين',p:'100'},{n:'الجسم كامل (بدون المناطق الحساسة)',p:'180'}]},
+ {g:'خدمات الوجه',items:[{n:'إزالة شعر الوجه بالفتلة',p:'20'},{n:'إزالة شعر الوجه بالشمع',p:'20'},{n:'إزالة شعر الرقبة كاملة بالشمع',p:'20'},{n:'إزالة شعر الوجه بالفتلة مع ماسك',p:'30'},{n:'إزالة شعر الوجه بالشمع مع ماسك',p:'30'}]},
+ {g:'خدمات إضافية',items:[{n:'تشقير الوجه أو الحواجب',p:'5'},{n:'تاتو حواجب',p:'35'}]}]},
+{id:'nails',t:'الأيدي والأقدام',note:'المناكير العادي مجانًا مع جميع الباقات.',groups:[{pk:1,items:[
+ {n:'الباقة الأولى',p:'95',inc:['إزالة الجلد الميت','تقليم وتنظيف الأظافر','ترطيب اليدين أو القدمين']},
+ {n:'الباقة الثانية',p:'130',inc:['كل ما في الباقة الأولى','ماسك لإزالة التصبغات والتوريد والترطيب']},
+ {n:'الباقة الثالثة',p:'200',inc:['كل ما في الباقة الثانية','ماسك للتبييض']},
+ {n:'باقة VIP',p:'250',inc:['كل ما في الباقة الثالثة','علاج بشمع البرافين لترطيب وتغذية البشرة بعمق'],star:1},
+ {n:'بديكير مغربي فاخر',p:'300',inc:['اليدين والرجلين معًا']}]},
+ {g:'إضافات',items:[{n:'تركيب الأظافر',p:'20'},{n:'لصق المناكير',p:'50'}]}]},
+{id:'hammam',t:'الحمام المغربي',groups:[{pk:1,items:[
+ {n:'الباقة الأولى',p:'120',inc:['ليفة مغربية','صابون مغربي']},
+ {n:'الباقة الثانية',p:'180',inc:['كل ما في الباقة الأولى','ماسك تقشير للجسم']},
+ {n:'الباقة الثالثة',p:'250',inc:['كل ما في الباقة الثانية','ماسك للتصبغات والتوريد','ماسك للتبييض والتعطير']},
+ {n:'باقة VIP',p:'300',inc:['كل ما في الباقة الثالثة','ماسك للتبييض والترطيب والتعطير','ماسك لترطيب الشعر وتعطيره'],star:1},
+ {n:'باقة VVIP',p:'500',inc:['كل ما في الباقة الثالثة','ماسك للتبييض والترطيب والتعطير','ماسك لترطيب الشعر وتعطيره','تعطير وتطهير الرحم']}]}]},
+{id:'hair',t:'الشعر',note:'إكسسوارات الشعر غير مشمولة، وتُحتسب كإضافة عند الطلب.',groups:[
+ {g:'تصفيف',items:[{n:'استشوار',p:'50–100',d:'حسب طول وكثافة الشعر'},{n:'فلو',p:'50–100',d:'حسب طول وكثافة الشعر'},{n:'تسريحات الشعر',p:'70–120',d:'حسب نوع التسريحة'}]},
+ {g:'قص',items:[{n:'قص الشعر',p:'50'},{n:'قص الغرة',p:'20'},{n:'تسوية أطراف الشعر',p:'20'}]},
+ {g:'صبغات وهايلايت',items:[{n:'صبغات الشعر',p:'100–500',d:'حسب الطول ونوع الصبغة'},{n:'هايلايت الشعر',p:'100–700',d:'حسب الطول والكثافة والتقنية'}]},
+ {g:'عمل يد فقط',items:[{n:'خدمة العمل فقط',p:'80',d:'المواد تكون من الزبونة'}]}]},
+{id:'makeup',t:'المكياج',note:'المكياج العربي ومكياج العرائس والزفة والأسبوع لها باقات وأسعار خاصة.',groups:[
+ {g:'مكياج بناتي',items:[{n:'خفيف جدًا',p:'100'},{n:'خفيف مع رموش',p:'120'},{n:'ثقيل مع رموش',p:'180'}]},
+ {g:'مكياج مدامي',items:[{n:'خفيف جدًا',p:'120'},{n:'خفيف مع رموش',p:'140'},{n:'ثقيل بدون رموش',p:'180'},{n:'ثقيل مع رموش',p:'200'}]},
+ {g:'إضافات',items:[{n:'هايلايتر للرقبة',p:'30'}]}]},
+{id:'bride',t:'باقات العرائس',groups:[{pk:1,items:[
+ {n:'الباقة الأولى',p:'1000',inc:['مكياج عروس','تسريحة شعر','أساس جسم','فتلة','ترتيب الحواجب']},
+ {n:'الباقة الثانية',p:'1200',inc:['كل ما في الباقة الأولى','تلبيسة العروس','برومو عروس كامل']},
+ {n:'الباقة الثالثة',p:'1500',inc:['كل ما في الباقة الثانية','تنظيف بشرة']},
+ {n:'الباقة الرابعة VIP',p:'2500',inc:['كل ما في الباقة الثالثة','بديكير VIP','حمام مغربي VIP','حلاوة الجسم كامل'],star:1},
+ {n:'الباقة الخامسة Luxury',p:'3000',inc:['كل ما في الباقة الرابعة','صبغة حسب الطلب واختيار اللون المناسب','جلسة تنظيف فروة الرأس']}]}]},
+{id:'photo',t:'جلسات التصوير',note:'الأسعار لا تشمل استاندات التعليق، وتُحتسب كإضافة عند الطلب.',groups:[{pk:1,items:[
+ {n:'أرضية تصوير مميزة',p:'180',inc:['جلسة تصوير بالأرضية']},
+ {n:'أرضية + تصوير احترافي',p:'300',inc:['أرضية تصوير','تصوير احترافي'],star:1}]}]},
+{id:'vip',t:'جناح VIP',note:'المنيو من اختيار الزبونة وعلى حسابها، وغير مشمول في سعر الباقة.',groups:[{pk:1,items:[
+ {n:'استئجار الجناح فقط',p:'400',inc:['جناح VIP بدون أي خدمات']},
+ {n:'باقة VIP الكاملة',p:'1800',inc:['جناح VIP','خدمة الضيافة (السيرفس)','مقاعد وطاولات لـ 15 شخصًا','ديكور وتجهيزات مميزة'],star:1}]}]}
+];
+
+/* ---------- فيديو الواجهة ---------- */
+(function(){ const v=$('#heroVid'); if(!v) return; v.muted=true;
+  const go=()=>{ const p=v.play(); if(p) p.catch(()=>{}); };
+  go(); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) go(); });
+  ['touchstart','scroll'].forEach(ev=>addEventListener(ev,go,{once:true,passive:true}));
+})();
+/* ---------- قائمة الأسعار ---------- */
+const ptabs=$('#ptabs'),pbody=$('#pbody');
+const waIcon='<svg class="i" viewBox="0 0 24 24"><path d="M4 20l1.2-4.2A8 8 0 1112 20a8 8 0 01-3.8-1zM9 9c0 3 3 6 6 6l1-1.5-2-1-1 .8c-1-.5-1.8-1.3-2.3-2.3l.8-1-1-2z"/></svg>';
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function askMsg(cat,name,price){return `السلام عليكم، أودّ الاستفسار عن: ${cat} – ${name} (${price} د.ل)`;}
+function renderCat(c){
+  let h='';const lists=[];
+  c.groups.forEach(g=>{
+    if(g.pk){h+='<div class="pgrid">'+g.items.map(it=>`<div class="pk${it.star?' star':''}">${it.star?'<span class="bd">الأكثر طلبًا</span>':''}<h4>${esc(it.n)}</h4><div class="pr">${esc(it.p)} <small>د.ل</small></div><ul>${(it.inc||[]).map(x=>'<li>'+esc(x)+'</li>').join('')}</ul><button class="ask" data-m="${esc(askMsg(c.t,it.n,it.p))}">${waIcon}<span>استفسري</span></button></div>`).join('')+'</div>';}
+    else lists.push(`<div class="plist"><h5>${esc(g.g)}</h5>${g.items.map(it=>`<div class="prow"><div class="nm"><b>${esc(it.n)}</b>${it.d?'<small>'+esc(it.d)+'</small>':''}</div><span class="pv">${esc(it.p)} د.ل</span><button class="ask" aria-label="استفسري عن ${esc(it.n)}" data-m="${esc(askMsg(c.t+' / '+g.g,it.n,it.p))}">${waIcon}<span>استفسري</span></button></div>`).join('')}</div>`);
+  });
+  if(lists.length) h+=(h?'<div style="height:18px"></div>':'')+'<div class="lists">'+lists.join('')+'</div>';
+  if(c.note) h+='<div class="pnote">📌 '+esc(c.note)+'</div>';
+  pbody.innerHTML=h; pbody.classList.remove('fade'); void pbody.offsetWidth; pbody.classList.add('fade');
+  $$('.ask',pbody).forEach(b=>b.addEventListener('click',()=>{
+    const m=b.dataset.m;
+    if(SITE.contact.whatsapp){window.open('https://wa.me/'+SITE.contact.whatsapp+'?text='+encodeURIComponent(m),'_blank','noopener');}
+    else{fs.value='استفسار عام';$('#fm').value=m;location.hash='#contact';toast('جهّزنا رسالتكِ في نموذج التواصل ✨');}
+  }));
+}
+PRICES.forEach((c,i)=>{const b=document.createElement('button');b.className='pt';b.textContent=c.t;b.setAttribute('role','tab');b.setAttribute('aria-selected',i===0);
+  b.addEventListener('click',()=>{$$('.pt').forEach(x=>x.setAttribute('aria-selected',x===b));renderCat(c);b.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});});ptabs.appendChild(b);});
+renderCat(PRICES[0]);
+
+/* ---------- مزاجكِ ---------- */
+const MOODS={
+ energy:{t:'زيارة مليئة بالطاقة',d:'ابدئي بالحركة، وكافئي نفسكِ بعدها.',r:['تمرين في الجيم','عصير منعش من الكافيه','جلسة مساج للعضلات']},
+ relax:{t:'ساعتان من الهدوء',d:'ابتعدي عن الضغط، ودعي التفاصيل علينا.',r:['مساج بالأدوات الخشبية','قناع ومقشر طبيعي','مشروب دافئ في الكافيه']},
+ glam:{t:'يوم دلال كامل',d:'لأنكِ تستحقين أن تتألقي.',r:['عناية بالبشرة','عناية بالأظافر والقدمين','مشروبكِ المفضل في الكافيه']},
+ friends:{t:'لمّة صديقات مميزة',d:'جمعة حلوة وتجربة تتذكرنها.',r:['فطور في الكافيه','جلسات عناية جماعية','هدية مغلّفة لإحداكن']}
+};
+const plan=$('#plan');
+function showMood(k){const m=MOODS[k];
+ plan.innerHTML=`<h3>${m.t}</h3><p>${m.d}</p><div class="route">${m.r.map((x,i)=>(i?'<i>←</i>':'')+'<span>'+x+'</span>').join('')}</div><a href="#contact" class="btn btn-gold">استفسري عن هذه التجربة</a>`;
+ plan.classList.remove('flash');void plan.offsetWidth;plan.classList.add('flash');
+ $('.btn',plan).addEventListener('click',()=>{fs.value='استفسار عام';$('#fm').value='أرغب في تجربة: '+m.t+' ('+m.r.join('، ')+')';});}
+$$('.md').forEach(b=>b.addEventListener('click',()=>{$$('.md').forEach(x=>x.setAttribute('aria-pressed',x===b));showMood(b.dataset.m);}));
+showMood('energy');
+
+/* ---------- بطاقة الإهداء: إرسال الطلب إلى الخادم (لا كتابة فوق صورة البطاقة) ---------- */
+const gform=$('#gform'),gstatus=$('#gstatus'),gsendBtn=$('#gsend');
+const gFields={to:$('#gto'),from:$('#gfrom'),gift:$('#gsv'),message:$('#gmsg-t'),phone:$('#gphone')};
+const gErrEl={to:$('#gto-e'),from:$('#gfrom-e'),message:$('#gmsg-t-e'),phone:$('#gphone-e')};
+function gSetErr(k,msg){const f=gFields[k];if(!f)return;const box=f.closest('.f');box.classList.toggle('bad',!!msg);f.setAttribute('aria-invalid',msg?'true':'false');if(gErrEl[k])gErrEl[k].textContent=msg||'';}
+function gStatus(type,msg){gstatus.className='gmsg '+type;gstatus.textContent=msg;}
+function gValidate(){
+  let first=null;const bad=(k,m)=>{gSetErr(k,m);if(!first)first=gFields[k];};
+  const v=k=>gFields[k].value.trim();
+  Object.keys(gErrEl).forEach(k=>gSetErr(k,''));
+  if(!v('to'))bad('to','اكتبي اسم من ستهدينها.');
+  if(!v('from'))bad('from','اكتبي اسمكِ.');
+  const digits=v('phone').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g,'');
+  if(!v('phone'))bad('phone','اكتبي رقم هاتفكِ لنتواصل معكِ.');
+  else if(!/^[0-9+\s()\-٠-٩]+$/.test(v('phone'))||digits.length<8||digits.length>15)bad('phone','رقم الهاتف غير صالح (من 8 إلى 15 رقمًا).');
+  if(first){first.focus();gStatus('err','تحقّقي من الحقول المُعلَّمة ثم أعيدي الإرسال.');return false;}
+  return true;
+}
+gform.addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!gValidate())return;
+  gsendBtn.disabled=true;gstatus.className='gmsg';
+  const body={to:gFields.to.value,from:gFields.from.value,gift:gFields.gift.value,message:gFields.message.value,phone:gFields.phone.value,website:$('#gweb').value};
+  try{
+    const r=await fetch('/api/gift-orders',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(body)});
+    let j={};try{j=await r.json();}catch(_){}
+    if(r.ok){
+      gform.reset();Object.keys(gErrEl).forEach(k=>gSetErr(k,''));
+      gStatus('ok','تم استلام طلب البطاقة بنجاح'+(j.ref?' (رقم الطلب '+j.ref+')':'')+'. سنجهّز البطاقة ونتواصل معكِ على رقم هاتفكِ.');
+      toast('تم إرسال طلب البطاقة 🎁');
+    }else{
+      if(j.field&&gFields[j.field])gSetErr(j.field,j.message||'');
+      gStatus('err',j.message||'تعذّر إرسال الطلب. حاولي مرة أخرى بعد قليل.');
+    }
+  }catch(_){gStatus('err','تعذّر الاتصال بالخادم. تحقّقي من الإنترنت وحاولي مرة أخرى.');}
+  finally{gsendBtn.disabled=false;}
+});
+
+/* ---------- مخطط المناسبة ---------- */
+$$('.pl-opts').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(g.classList.contains('multi'))b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true');
+ else $$('button',g).forEach(x=>x.setAttribute('aria-pressed',x===b));}));
+const plR=$('#plR');plR.addEventListener('input',()=>$('#plN').textContent=plR.value);
+$('#plGo').addEventListener('click',()=>{const t=$('.pl-opts[data-k=type] [aria-pressed=true]').textContent;
+ const ex=$$('.pl-opts[data-k=extra] [aria-pressed=true]').map(b=>b.textContent);
+ setTimeout(()=>{fs.value='events';$('#fm').value=`مناسبة: ${t}\nعدد الحضور: ${plR.value} تقريبًا${ex.length?'\nإضافات: '+ex.join('، '):''}`;},0);});
+
+$$('[data-pick]').forEach(a => a.addEventListener('click', () => { fs.value = a.dataset.pick; }));
+
+const pv = $('#preview');
+$('#form').addEventListener('submit', e => {
+  e.preventDefault();
+  const n = $('#fn').value.trim(), m = $('#fm').value.trim();
+  const sv = SITE.serviceNames[fs.value] || fs.value;
+  const msg = `السلام عليكم، ${n ? 'أنا ' + n + '. ' : ''}أودّ الاستفسار عن: ${sv}.${m ? '\n' + m : ''}`;
+  pv.innerHTML = '<small>نص الرسالة</small>'; pv.append(document.createTextNode(msg)); pv.classList.add('on');
+  if(SITE.contact.whatsapp){ window.open('https://wa.me/' + SITE.contact.whatsapp + '?text=' + encodeURIComponent(msg), '_blank', 'noopener'); }
+  else {
+    const done = () => toast('تم نسخ الرسالة. يمكن إرسالها عبر واتساب أو فيسبوك بعد إضافة الروابط.');
+    if(navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(msg).then(done, () => toast('جهّزنا الرسالة أدناه.'));
+    else toast('جهّزنا الرسالة أدناه.');
+  }
+});
+</script>
+</body>
+</html>

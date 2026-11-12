@@ -1,0 +1,18 @@
+{% extends "_base.html" %}
+{% block title %}تسجيل الدخول{% endblock %}
+{% block body %}
+<h1>لوحة تحكم الزُمردة</h1>
+<p class="sub">تسجيل دخول المديرة</p>
+{% if error %}<div class="msg err" role="alert">{{ error }}</div>{% endif %}
+{% if not has_admin %}<div class="msg err" role="note">لم يُنشأ حساب المديرة بعد. يُنشأ مرة واحدة عبر الخادم بالأمر <span dir="ltr">python3 manage.py create-admin</span>.</div>{% endif %}
+<form method="post" action="/admin/login" autocomplete="on">
+  <input type="hidden" name="csrf_token" value="{{ csrf }}">
+  <input type="hidden" name="next" value="{{ next }}">
+  <div class="f"><label for="u">اسم المستخدم</label>
+    <input id="u" name="username" type="text" value="{{ username }}" autocomplete="username" autocapitalize="none" spellcheck="false" required maxlength="64" dir="ltr"></div>
+  <div class="f"><label for="p">كلمة المرور</label>
+    <input id="p" name="password" type="password" autocomplete="current-password" required maxlength="256" dir="ltr"></div>
+  <button class="btn" type="submit">دخول</button>
+</form>
+<a class="back" href="/">العودة إلى الموقع</a>
+{% endblock %}

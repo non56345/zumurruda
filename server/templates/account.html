@@ -1,0 +1,20 @@
+{% extends "_base.html" %}
+{% block title %}تغيير كلمة المرور{% endblock %}
+{% block body %}
+<h1>تغيير كلمة المرور</h1>
+<p class="sub">الحساب: <span dir="ltr">{{ username }}</span></p>
+{% if msg %}<div class="msg ok" role="status">{{ msg }}</div>{% endif %}
+{% if error %}<div class="msg err" role="alert">{{ error }}</div>{% endif %}
+<form method="post" action="/admin/password" autocomplete="off">
+  <input type="hidden" name="csrf_token" value="{{ csrf }}">
+  <div class="f"><label for="c">كلمة المرور الحالية</label>
+    <input id="c" name="current_password" type="password" autocomplete="current-password" required maxlength="256" dir="ltr"></div>
+  <div class="f"><label for="n">كلمة المرور الجديدة</label>
+    <input id="n" name="new_password" type="password" autocomplete="new-password" required minlength="12" maxlength="128" dir="ltr">
+    <p class="hint">12 حرفاً على الأقل، ولا تحتوي اسم المستخدم.</p></div>
+  <div class="f"><label for="k">تأكيد كلمة المرور الجديدة</label>
+    <input id="k" name="confirm_password" type="password" autocomplete="new-password" required minlength="12" maxlength="128" dir="ltr"></div>
+  <button class="btn" type="submit">حفظ كلمة المرور</button>
+</form>
+<a class="back" href="/admin/">العودة إلى لوحة التحكم</a>
+{% endblock %}
