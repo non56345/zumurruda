@@ -1,13 +1,10 @@
-"""الكتابة في قاعدة البيانات (الخطوة 4): حفظ كامل لبيانات اللوحة داخل معاملة واحدة.
+"""الكتابة في قاعدة البيانات (MongoDB): حفظ كامل لبيانات اللوحة داخل وثيقة site.
 
-- رقم مراجعة (rev) يمنع أن يمسح جهازٌ تعديلات جهاز آخر دون علم (تعارض 409).
-- سجل عمليات (audit_log) بالنص الذي تعرضه اللوحة واسم المستخدمة.
-- نسخة احتياطية تلقائية من القاعدة قبل الاستيراد والاستعادة، ودورياً قبل الكتابة.
+- رقم مراجعة (rev) بتقنية Compare-And-Set (CAS) لمنع تداخل التعديلات (تعارض 409).
+- سجل عمليات (audit_log) بالنص واسم المستخدمة ورقم المراجعة.
+- نسخ احتياطية داخلية لوثيقة site في مجموعة site_backups قبل الاستيراد والاستعادة أو يدوياً.
 """
-import json
-import sqlite3
 import time
-from pathlib import Path
 
 from . import queries
 from .seed_loader import read_seed, snapshot
@@ -15,130 +12,154 @@ from .seed_loader import read_seed, snapshot
 LOG_KEEP = 500
 
 
-def get_rev(conn):
-    r = conn.execute("SELECT value FROM meta WHERE key='rev'").fetchone()
-    return int(r["value"]) if r else 0
+class ConflictError(Exception):
+    def __init__(self, message, rev):
+        super().__init__(message)
+        self.rev = rev
 
 
-def _set_rev(conn, rev):
-    conn.execute("INSERT INTO meta(key,value) VALUES('rev',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
-                 (str(rev),))
+def get_rev(db):
+    doc = db.site.find_one({"_id": "site"}, {"rev": 1})
+    return int(doc.get("rev", 0)) if doc else 0
 
 
-def content_keys(conn):
-    return [r["key"] for r in conn.execute("SELECT key FROM content ORDER BY sort")]
+def content_keys(db):
+    doc = db.site.find_one({"_id": "site"}, {"content": 1, "contentFields": 1})
+    if not doc:
+        return []
+    if "contentFields" in doc:
+        return [f["key"] for f in doc["contentFields"]]
+    return list(doc.get("content", {}).keys())
 
 
 def seed_slots():
     return list(read_seed()["images"].keys())
 
 
-def recent_log(conn, n=30):
-    return [{"t": int(r["ts"] * 1000), "m": r["msg"], "u": r["username"]}
-            for r in conn.execute("SELECT * FROM audit_log ORDER BY id DESC LIMIT ?", (n,))]
+def recent_log(db, n=30):
+    docs = list(db.audit_log.find().sort([("_id", -1)]).limit(n))
+    return [
+        {"t": int(r["ts"] * 1000), "m": r["msg"], "u": r["username"]}
+        for r in docs
+    ]
 
 
-def full_state(conn):
-    s = snapshot(conn)
+def full_state(db):
+    s = snapshot(db)
     s.pop("contentFields", None)
     s["version"] = 1
-    s["log"] = recent_log(conn)
+    s["log"] = recent_log(db)
     return s
 
 
-def replace_state(conn, d, username, msg):
-    """يستبدل بيانات الموقع بالكامل بالبيانات المتحقَّق منها. يُستدعى داخل معاملة."""
-    old_imgs = {r["slot"]: r for r in conn.execute("SELECT * FROM images")}
-    for k, v in d["content"].items():
-        conn.execute("UPDATE content SET value=? WHERE key=?", (v, k))
-    for k, v in d["contact"].items():
-        conn.execute("INSERT INTO contact(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
-                     (k, v))
-    # الصور: تحديث مع الاحتفاظ بالمسار الأصلي لكل موضع (للاستعادة)
-    for slot in set(old_imgs) - set(d["images"]):
-        conn.execute("DELETE FROM images WHERE slot=?", (slot,))
-    for i, (slot, im) in enumerate(d["images"].items()):
-        if slot in old_imgs:
-            conn.execute("UPDATE images SET label=?, grp=?, src=?, sort=? WHERE slot=?",
-                         (im["label"], im["group"], im["src"], i, slot))
-        else:
-            conn.execute("INSERT INTO images(slot,label,grp,src,original_src,sort) VALUES(?,?,?,?,?,?)",
-                         (slot, im["label"], im["group"], im["src"], im["src"], i))
-    conn.execute("DELETE FROM services")
-    for i, s in enumerate(d["services"]):
-        conn.execute("INSERT INTO services(id,name,en,desc,grp,slot,price,sort) VALUES(?,?,?,?,?,?,?,?)",
-                     (s["id"], s["name"], s["en"], s["desc"], s["group"], s["slot"], s["price"], i))
-    conn.execute("DELETE FROM price_cats")           # يحذف المجموعات والبنود بالتتابع (CASCADE)
-    for ci, c in enumerate(d["priceCats"]):
-        conn.execute("INSERT INTO price_cats(id,title,note,sort) VALUES(?,?,?,?)", (c["id"], c["t"], c.get("note"), ci))
-        for gi, g in enumerate(c["groups"]):
-            cur = conn.execute("INSERT INTO price_groups(cat_id,pk,title,sort) VALUES(?,?,?,?)",
-                               (c["id"], g.get("pk"), g.get("g"), gi))
-            for ii, it in enumerate(g["items"]):
-                conn.execute("INSERT INTO price_items(group_id,name,price,includes,star,desc,sort) VALUES(?,?,?,?,?,?,?)",
-                             (cur.lastrowid, it["n"], it["p"],
-                              json.dumps(it["inc"], ensure_ascii=False) if "inc" in it else None,
-                              it.get("star"), it.get("d"), ii))
-    conn.execute("DELETE FROM products")
-    for i, p in enumerate(d["products"]):
-        conn.execute("INSERT INTO products(id,name,desc,price,slot,sort) VALUES(?,?,?,?,?,?)",
-                     (p["id"], p["name"], p["desc"], p["price"], p["slot"], i))
-    conn.execute("DELETE FROM gallery")
-    for i, g in enumerate(d["gallery"]):
-        conn.execute("INSERT INTO gallery(id,slot,cat,cap,sort) VALUES(?,?,?,?,?)",
-                     (g["id"], g["slot"], g["cat"], g["cap"], i))
-    rev = get_rev(conn) + 1
-    _set_rev(conn, rev)
-    conn.execute("INSERT INTO audit_log(ts,username,msg,rev) VALUES(?,?,?,?)", (time.time(), username, msg[:300], rev))
-    conn.execute("DELETE FROM audit_log WHERE id <= (SELECT MAX(id) FROM audit_log) - ?", (LOG_KEEP,))
-    return rev
+def replace_state(db, d, username, msg, base_rev=None):
+    """يستبدل بيانات وثيقة site بالكامل بالبيانات المتحقق منها باستخدام Compare-and-Set."""
+    curr = db.site.find_one({"_id": "site"}) or {}
+    current_rev = curr.get("rev", 0)
+
+    if base_rev is not None and base_rev != current_rev:
+        raise ConflictError(
+            "تم تعديل البيانات من جهاز أو نافذة أخرى. أُعيد تحميل أحدث نسخة؛ أعيدي تطبيق تعديلكِ.",
+            current_rev,
+        )
+
+    old_imgs = curr.get("images", {})
+    new_imgs = {}
+    for slot, im in d["images"].items():
+        original_src = old_imgs.get(slot, {}).get("original_src", im["src"])
+        new_imgs[slot] = {
+            "label": im["label"],
+            "group": im["group"],
+            "src": im["src"],
+            "original_src": original_src,
+        }
+
+    update_doc = {
+        "content": d["content"],
+        "contact": d["contact"],
+        "services": d["services"],
+        "priceCats": d["priceCats"],
+        "products": d["products"],
+        "images": new_imgs,
+        "gallery": d["gallery"],
+        "updated_at": time.time(),
+    }
+
+    # ذرّي: CAS
+    res = db.site.update_one(
+        {"_id": "site", "rev": current_rev},
+        {"$set": update_doc, "$inc": {"rev": 1}},
+    )
+    if res.matched_count == 0:
+        latest = get_rev(db)
+        raise ConflictError(
+            "تم تعديل البيانات من جهاز أو نافذة أخرى. أُعيد تحميل أحدث نسخة؛ أعيدي تطبيق تعديلكِ.",
+            latest,
+        )
+
+    new_rev = current_rev + 1
+    db.audit_log.insert_one({
+        "ts": time.time(),
+        "username": username,
+        "msg": msg[:300],
+        "rev": new_rev,
+    })
+
+    # إبقاء آخر 500 عملية
+    cutoff = list(db.audit_log.find({}, {"rev": 1}).sort([("rev", -1)]).skip(LOG_KEEP).limit(1))
+    if cutoff:
+        db.audit_log.delete_many({"rev": {"$lte": cutoff[0]["rev"]}})
+
+    return new_rev
 
 
-def restore_seed_state(conn):
+def restore_seed_state(_db):
     """البيانات الأصلية المستخرجة من الموقع (seed.js) بصيغة اللوحة."""
     s = read_seed()
     return {k: s[k] for k in ("content", "contact", "services", "priceCats", "products", "images", "gallery")}
 
 
-# ------------------------------------------------------------------ النسخ الاحتياطي
-def backup_dir(db_path):
-    return Path(db_path).parent / "backups"
+def snapshot_site(db, reason="manual", keep=20):
+    """نسخة احتياطية لوثيقة site في مجموعة site_backups تُبقي آخر keep نسخة."""
+    doc = db.site.find_one({"_id": "site"})
+    if not doc:
+        return None
+    doc_copy = dict(doc)
+    doc_copy.pop("_id", None)
+    res = db.site_backups.insert_one({
+        "reason": reason,
+        "at": time.time(),
+        "doc": doc_copy,
+    })
+    # إبقاء آخر keep نسخة
+    old_backups = list(db.site_backups.find({}, {"_id": 1}).sort([("at", -1)]).skip(keep))
+    if old_backups:
+        db.site_backups.delete_many({"_id": {"$in": [b["_id"] for b in old_backups]}})
+    return str(res.inserted_id)
 
 
-def make_backup(db_path, reason="manual", keep=40):
-    """نسخة متسقة بواجهة SQLite backup (آمنة أثناء التشغيل). تُبقي آخر `keep` نسخة."""
-    d = backup_dir(db_path)
-    d.mkdir(parents=True, exist_ok=True)
-    stamp = time.strftime("%Y%m%d-%H%M%S")
-    dst = d / f"zumurrud-{stamp}-{reason}.db"
-    n = 1
-    while dst.exists():
-        n += 1
-        dst = d / f"zumurrud-{stamp}-{reason}-{n}.db"
-    src = sqlite3.connect(db_path)
-    out = sqlite3.connect(dst)
-    try:
-        src.backup(out)
-    finally:
-        out.close()
-        src.close()
-    files = sorted(d.glob("zumurrud-*.db"), key=lambda p: p.stat().st_mtime)
-    for old in files[:-keep] if keep else []:
-        old.unlink(missing_ok=True)
-    return dst
+def referenced_uploads(db):
+    doc = db.site.find_one({"_id": "site"}, {"images": 1})
+    if not doc:
+        return set()
+    imgs = doc.get("images", {})
+    return {
+        im["src"][len("uploads/"):]
+        for im in imgs.values()
+        if isinstance(im, dict) and im.get("src", "").startswith("uploads/")
+    }
 
 
-def maybe_periodic_backup(db_path, interval_seconds):
-    d = backup_dir(db_path)
-    latest = max((p.stat().st_mtime for p in d.glob("zumurrud-*.db")), default=0) if d.exists() else 0
-    if time.time() - latest >= interval_seconds:
-        return make_backup(db_path, "auto")
-    return None
-
-
-def referenced_uploads(conn):
-    return {r["src"][len("uploads/"):] for r in conn.execute("SELECT src FROM images WHERE src LIKE 'uploads/%'")}
-
-
-__all__ = ["get_rev", "content_keys", "seed_slots", "full_state", "replace_state", "restore_seed_state",
-           "make_backup", "maybe_periodic_backup", "recent_log", "referenced_uploads", "queries"]
+__all__ = [
+    "ConflictError",
+    "get_rev",
+    "content_keys",
+    "seed_slots",
+    "full_state",
+    "replace_state",
+    "restore_seed_state",
+    "snapshot_site",
+    "recent_log",
+    "referenced_uploads",
+    "queries",
+]

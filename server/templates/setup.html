@@ -1,0 +1,27 @@
+{% extends "_base.html" %}
+{% block title %}إعداد حساب المديرة{% endblock %}
+{% block body %}
+<h1>إعداد حساب المديرة</h1>
+<p class="sub">إنشاء الحساب لأول مرة (مرة واحدة فقط)</p>
+{% if error %}<div class="msg err" role="alert">{{ error }}</div>{% endif %}
+<form method="post" action="/admin/setup" autocomplete="off">
+  <input type="hidden" name="csrf_token" value="{{ csrf }}">
+  <div class="f"><label for="st">رمز الإعداد (SETUP_TOKEN)</label>
+    <input id="st" name="setup_token" type="password" required maxlength="256" dir="ltr" autocomplete="one-time-code">
+    <div class="hint">الرمز المضاف في متغيرات البيئة بـ Vercel.</div>
+  </div>
+  <div class="f"><label for="u">اسم المستخدم</label>
+    <input id="u" name="username" type="text" value="{{ username }}" required maxlength="32" dir="ltr" spellcheck="false" autocapitalize="none">
+    <div class="hint">من 3 إلى 32 حرفاً (أحرف إنجليزية صغيرة وأرقام و . _ - فقط).</div>
+  </div>
+  <div class="f"><label for="p">كلمة المرور</label>
+    <input id="p" name="password" type="password" required maxlength="128" dir="ltr" autocomplete="new-password">
+    <div class="hint">12 حرفاً على الأقل.</div>
+  </div>
+  <div class="f"><label for="c">تأكيد كلمة المرور</label>
+    <input id="c" name="confirm" type="password" required maxlength="128" dir="ltr" autocomplete="new-password">
+  </div>
+  <button class="btn" type="submit">إنشاء الحساب</button>
+</form>
+<a class="back" href="/admin/login">العودة إلى تسجيل الدخول</a>
+{% endblock %}

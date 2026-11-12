@@ -1,6 +1,8 @@
-# التشغيل على Windows 11 وVS Code
+# التشغيل على Windows 11 وVS Code (أرشيفي - Legacy)
 
-## 1) ما تحتاجينه مرة واحدة
+> **تنبيه (Legacy):** هذا الدليل أرشيفي وكان مخصصاً للنسخة القديمة المعتمدة على SQLite والملفات المحلية. الموقع رُحّل بالكامل ليعمل على **MongoDB Atlas** والنشر السحابي على **Vercel Serverless**. راجعي دليل النشر الحالي في [docs/DEPLOY.md](DEPLOY.md) ودليل التطوير في [README.md](../README.md).
+
+---
 
 1. **Python 3.11 أو أحدث** من https://www.python.org/downloads/
    أثناء التثبيت فعّلي خيار **Add python.exe to PATH**.

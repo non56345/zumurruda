@@ -1,75 +1,76 @@
-"""الخطوة 8: التجهيز للنشر (waitress، .env، أوامر النسخ الاحتياطي، فحص الجاهزية، ملفات Windows)."""
+"""الخطوة 8: التجهيز للنشر (Vercel Serverless، .env، فحص الجاهزية، إدارة MongoDB)."""
 import os
-import socket
-import sqlite3
 import subprocess
 import sys
 import tempfile
-import time
 import unittest
-import urllib.request
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tests"))
 
-from helpers import PASSWORD, USER, make_app  # noqa: E402
-
-
-def cli(db, *args, stdin="", extra=None):
-    env = {**os.environ, "ZUM_DB": db, "PYTHONUTF8": "1", "ZUM_UPLOADS": str(Path(db).parent / "uploads")}
-    env.pop("ZUM_COOKIE_SECURE", None)
-    env.update(extra or {})
-    return subprocess.run([sys.executable, "manage.py", *args], cwd=ROOT, env=env, input=stdin,
-                          capture_output=True, text=True, timeout=60)
+from helpers import PASSWORD, USER, add_admin, make_app  # noqa: E402
+from server.config import Config  # noqa: E402
 
 
 class TestOps(unittest.TestCase):
     def setUp(self):
-        self.tmp = tempfile.TemporaryDirectory()
-        self.db = str(Path(self.tmp.name) / "z.db")
+        self.app = make_app()
+        self.db = self.app.mongo_client[self.app.config["MONGODB_DB"]]
 
     def tearDown(self):
-        self.tmp.cleanup()
+        self.app._tmp.cleanup()
 
-    def test_check_backup_restore_cycle(self):
-        r = cli(self.db, "check")
-        self.assertEqual(r.returncode, 1)
-        self.assertIn("create-admin", r.stdout)
-        self.assertEqual(cli(self.db, "create-admin", stdin=f"{USER}\n{PASSWORD}\n{PASSWORD}\n").returncode, 0)
-        r = cli(self.db, "check")
-        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
-        self.assertIn("images/skin.jpg", r.stdout)                    # ملاحظة عن الصورة الناقصة
-        self.assertEqual(cli(self.db, "check", extra={"ZUM_COOKIE_SECURE": "0"}).returncode, 1)
-        r = cli(self.db, "backup")
-        self.assertEqual(r.returncode, 0)
-        bak = sorted((Path(self.tmp.name) / "backups").glob("*.db"))[0]
-        # تعديل ثم استرجاع
-        c = sqlite3.connect(self.db)
-        c.execute("UPDATE price_items SET price='999'")
-        c.commit()
-        c.close()
-        r = cli(self.db, "restore", bak.name)
-        self.assertEqual(r.returncode, 0, r.stderr)
-        c = sqlite3.connect(self.db)
-        self.assertEqual(c.execute("SELECT COUNT(*) FROM price_items WHERE price='999'").fetchone()[0], 0)
-        self.assertTrue(list((Path(self.tmp.name) / "backups").glob("*before-restore*.db")))
-        self.assertNotEqual(cli(self.db, "restore", "nope.db").returncode, 0)
-        self.assertIn(bak.name, cli(self.db, "list-backups").stdout)
+    def test_check_and_status(self):
+        import manage
+        from server.seed_loader import seed
+        seed(self.db)
+        with mock.patch("manage._get_db", return_value=self.db), \
+             mock.patch("manage.get_client", return_value=self.app.mongo_client):
+            # دون أدمن وبدون SETUP_TOKEN
+            with mock.patch.object(Config, "SETUP_TOKEN", ""):
+                r = manage.check_command(self.db)
+                self.assertEqual(r, 1)
+
+            # بعد إضافة الأدمن
+            add_admin(self.app)
+            r = manage.check_command(self.db)
+            self.assertEqual(r, 0)
+
+            # فحص حالة status
+            r_status = manage.main(["manage.py", "status"])
+            self.assertEqual(r_status, 0)
+
+    def test_backup_restore_atlas_guidance(self):
+        import manage
+        with mock.patch("manage._get_db", return_value=self.db):
+            for cmd in ("backup", "list-backups", "restore"):
+                r = manage.main(["manage.py", cmd])
+                self.assertEqual(r, 1)
 
     def test_cleanup_uploads(self):
-        cli(self.db, "init-db")
-        up = Path(self.tmp.name) / "uploads"
-        up.mkdir()
-        (up / "orphan123.jpg").write_bytes(b"x")
-        (up / ".gitkeep").write_bytes(b"")
-        r = cli(self.db, "cleanup-uploads", "--dry-run")
-        self.assertIn("1", r.stdout)
-        self.assertTrue((up / "orphan123.jpg").exists())
-        cli(self.db, "cleanup-uploads")
-        self.assertFalse((up / "orphan123.jpg").exists())
-        self.assertTrue((up / ".gitkeep").exists())
+        import manage
+        from bson import Binary
+        # إضافة صورة يتيمة وصورة مستخدمة
+        self.db.uploads.insert_one({
+            "_id": "orphan123.jpg",
+            "data": Binary(b"test"),
+            "content_type": "image/jpeg",
+            "size": 4,
+            "created_at": 1000.0,
+        })
+        with mock.patch("manage._get_db", return_value=self.db):
+            # dry run لا يحذف
+            r = manage.main(["manage.py", "cleanup-uploads", "--dry-run"])
+            self.assertEqual(r, 0)
+            self.assertIsNotNone(self.db.uploads.find_one({"_id": "orphan123.jpg"}))
+
+            # التنظيف الفعلي
+            r = manage.main(["manage.py", "cleanup-uploads"])
+            self.assertEqual(r, 0)
+            self.assertIsNone(self.db.uploads.find_one({"_id": "orphan123.jpg"}))
 
 
 class TestEnvFile(unittest.TestCase):
@@ -96,44 +97,24 @@ class TestEnvFile(unittest.TestCase):
         ex = (ROOT / ".env.example").read_text(encoding="utf8")
         self.assertNotIn("PASSWORD", ex.upper().replace("كلمة المرور", ""))
         self.assertIn("ZUM_COOKIE_SECURE=1", ex)
+        self.assertIn("MONGODB_URI", ex)
+        self.assertIn("SETUP_TOKEN", ex)
 
 
-class TestServers(unittest.TestCase):
-    def test_waitress_serves_site(self):
-        with socket.socket() as s:
-            s.bind(("127.0.0.1", 0))
-            port = s.getsockname()[1]
-        tmp = tempfile.TemporaryDirectory()
-        env = {**os.environ, "ZUM_DB": str(Path(tmp.name) / "w.db"), "ZUM_PORT": str(port), "PYTHONUTF8": "1",
-               "ZUM_UPLOADS": str(Path(tmp.name) / "up")}
-        proc = subprocess.Popen([sys.executable, "serve.py"], cwd=ROOT, env=env, stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
-        try:
-            for _ in range(50):
-                try:
-                    r = urllib.request.urlopen(f"http://127.0.0.1:{port}/", timeout=2)
-                    break
-                except OSError:
-                    time.sleep(0.2)
-            else:
-                self.fail("waitress لم يبدأ: " + proc.stderr.read1().decode(errors="ignore"))
-            self.assertEqual(r.status, 200)
-            self.assertEqual(r.read(), (ROOT / "index.html").read_bytes())
-            v = urllib.request.urlopen(urllib.request.Request(f"http://127.0.0.1:{port}/images/promo-bg.mp4",
-                                                              headers={"Range": "bytes=0-99"}))
-            self.assertEqual(v.status, 206)                          # Safari/iOS يحتاج Range للفيديو
-            self.assertEqual(len(v.read()), 100)
-        finally:
-            proc.terminate()
-            proc.wait(10)
-            proc.stdout.close()
-            proc.stderr.close()
-            tmp.cleanup()
+class TestVercelEntryPoints(unittest.TestCase):
+    def test_entry_points(self):
+        import app
+        self.assertTrue(hasattr(app, "app"))
+        import wsgi
+        self.assertTrue(hasattr(wsgi, "app"))
 
-    def test_wsgi_entry_points(self):
-        src = (ROOT / "wsgi.py").read_text(encoding="utf8")
-        self.assertIn("app = create_app()", src)
-        self.assertIn("application = create_app()", (ROOT / "passenger_wsgi.py").read_text(encoding="utf8"))
+    def test_vercel_json_configuration(self):
+        import json
+        vjson_path = ROOT / "vercel.json"
+        self.assertTrue(vjson_path.exists())
+        data = json.loads(vjson_path.read_text(encoding="utf8"))
+        self.assertEqual(data.get("regions"), ["fra1"])
+        self.assertTrue(any(r.get("destination") == "/app.py" for r in data.get("rewrites", [])))
 
 
 class TestHttpExtras(unittest.TestCase):
@@ -155,11 +136,8 @@ class TestHttpExtras(unittest.TestCase):
         self.assertNotIn("Set-Cookie", r.headers)
 
     def test_upload_dotfiles_hidden(self):
-        up = Path(self.app._tmp.name) / "uploads"
-        up.mkdir()
-        (up / ".gitkeep").write_text("")
-        self.app.config["UPLOADS"] = up
         self.assertEqual(self.c.get("/uploads/.gitkeep").status_code, 404)
+        self.assertEqual(self.c.get("/uploads/..").status_code, 404)
 
     def test_video_present(self):
         p = ROOT / "images" / "promo-bg.mp4"
@@ -167,21 +145,23 @@ class TestHttpExtras(unittest.TestCase):
         self.assertLess(p.stat().st_size, 3 * 1024 * 1024)
 
 
-class TestWindowsFiles(unittest.TestCase):
+class TestProjectRequirements(unittest.TestCase):
     def test_bat_files_crlf_and_ascii(self):
-        bats = list((ROOT / "windows").glob("*.bat"))
-        self.assertGreaterEqual(len(bats), 4)
+        win_dir = ROOT / "windows"
+        if not win_dir.exists():
+            return
+        bats = list(win_dir.glob("*.bat"))
         for b in bats:
             data = b.read_bytes()
             self.assertIn(b"\r\n", data, b.name)
             self.assertNotIn(b"\n", data.replace(b"\r\n", b""), b.name)     # كل الأسطر CRLF
             data.decode("ascii")                                            # لا مشاكل ترميز في cmd
-        self.assertIn(b"ZUM_COOKIE_SECURE=0", (ROOT / "windows" / "run-local.bat").read_bytes())
 
     def test_requirements(self):
         req = (ROOT / "requirements.txt").read_text()
-        for pkg in ("Flask", "Pillow", "waitress"):
+        for pkg in ("Flask", "Pillow", "pymongo"):
             self.assertIn(pkg, req)
+        self.assertNotIn("waitress", req)
 
 
 if __name__ == "__main__":

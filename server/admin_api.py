@@ -5,9 +5,9 @@
   PUT  /api/admin/state     حفظ كامل بعد التحقق: {state, rev, msg}
   POST /api/admin/reset     نسخة احتياطية ثم استعادة البيانات الأصلية
   POST /api/admin/upload    رفع صورة (multipart: file, kind=image|logo) ← {src}
-  POST /api/admin/backup    نسخة احتياطية فورية من القاعدة
+  POST /api/admin/backup    نسخة احتياطية فورية من وثيقة site
 """
-from flask import Blueprint, current_app, g, jsonify, request
+from flask import Blueprint, g, jsonify, request
 
 from . import store, uploads
 from .db import get_db
@@ -22,10 +22,6 @@ def _err(status, code, message, **extra):
     return resp
 
 
-def _uploads_dir():
-    return current_app.config["UPLOADS"]
-
-
 def _state_response(db):
     return jsonify(state=store.full_state(db), rev=store.get_rev(db))
 
@@ -37,26 +33,23 @@ def get_state():
 
 def _save(db, raw, msg, *, base_rev, backup_reason=None):
     try:
-        clean = validate_state(raw, content_keys=store.content_keys(db), required_slots=store.seed_slots(),
-                               upload_exists=lambda n: uploads.exists(_uploads_dir(), n))
+        clean = validate_state(
+            raw,
+            content_keys=store.content_keys(db),
+            required_slots=store.seed_slots(),
+            upload_exists=lambda n: uploads.exists(db, n),
+        )
     except ValidationError as e:
         return _err(400, "invalid", str(e), where=e.where)
-    dbpath = current_app.config["DATABASE"]
+
     if backup_reason:
-        store.make_backup(dbpath, backup_reason)
-    else:
-        store.maybe_periodic_backup(dbpath, current_app.config["BACKUP_INTERVAL"])
-    db.execute("BEGIN IMMEDIATE")                 # قفل كتابة: لا يتداخل حفظان
+        store.snapshot_site(db, backup_reason)
+
     try:
-        if base_rev is not None and store.get_rev(db) != base_rev:
-            db.rollback()
-            return _err(409, "conflict", "تم تعديل البيانات من جهاز أو نافذة أخرى. أُعيد تحميل أحدث نسخة؛ أعيدي تطبيق تعديلكِ.",
-                        rev=store.get_rev(db))
-        rev = store.replace_state(db, clean, g.session["username"], msg)
-        db.commit()
-    except Exception:
-        db.rollback()
-        raise
+        rev = store.replace_state(db, clean, g.session["username"], msg, base_rev=base_rev)
+    except store.ConflictError as e:
+        return _err(409, "conflict", str(e), rev=e.rev)
+
     return jsonify(ok=True, rev=rev, log=store.recent_log(db))
 
 
@@ -84,12 +77,13 @@ def reset():
 
 @bp.post("/upload")
 def upload():
+    db = get_db()
     f = request.files.get("file")
     kind = "logo" if request.form.get("kind") == "logo" else "image"
     if f is None:
         return _err(400, "invalid", "لم يتم اختيار ملف.")
     try:
-        name, size = uploads.save_image(f.read(uploads.MAX_BYTES + 1), _uploads_dir(), kind=kind)
+        name, size = uploads.save_image(f.read(uploads.MAX_BYTES + 1), db, kind=kind)
     except uploads.UploadError as e:
         return _err(400, "invalid", str(e))
     return jsonify(ok=True, src=f"uploads/{name}", width=size[0], height=size[1])
@@ -97,10 +91,11 @@ def upload():
 
 @bp.post("/backup")
 def backup():
-    p = store.make_backup(current_app.config["DATABASE"], "manual")
-    return jsonify(ok=True, file=p.name)
+    db = get_db()
+    backup_id = store.snapshot_site(db, "manual")
+    return jsonify(ok=True, file=str(backup_id))
 
 
 @bp.errorhandler(413)
 def _too_big(_e):
-    return _err(413, "too_large", "حجم الملف أكبر من المسموح (10 ميغابايت).")
+    return _err(413, "too_large", "حجم الملف أكبر من المسموح (4 ميغابايت).")

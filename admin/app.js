@@ -136,7 +136,7 @@ function confirmDelete({ title, text, onConfirm }) {
 async function readImage(file, { png = false } = {}) {
   if (!file) throw new Error('لم يتم اختيار ملف.');
   if (!/^image\/(jpeg|png|webp|gif)$/.test(file.type)) throw new Error('نوع الملف غير مدعوم. اختاري صورة بصيغة JPG أو PNG أو WEBP.');
-  if (file.size > 10 * 1024 * 1024) throw new Error('حجم الصورة أكبر من 10 ميغابايت.');
+  if (file.size > 4 * 1024 * 1024) throw new Error('حجم الصورة أكبر من 4 ميغابايت.');
   const fd = new FormData(); fd.append('file', file, file.name || 'image'); fd.append('kind', png ? 'logo' : 'image');
   const r = await api('POST', '/api/admin/upload', undefined, fd);
   if (!r.ok) throw new Error(r.data.message || 'تعذّر رفع الصورة.');
@@ -145,7 +145,7 @@ async function readImage(file, { png = false } = {}) {
 /* حقل رفع صورة داخل نموذج: يخزّن الناتج في form._img */
 function imgFieldHTML(slot, label = 'الصورة') {
   return `<div class="field"><label>${esc(label)}</label><div class="imgfield"><div data-prev>${thumb(slot || '__none', 'sq')}</div>
-  <div><input type="file" accept="image/*" data-imgin><div class="hint" style="margin-top:6px">JPG أو PNG أو WEBP، حتى 10 ميغابايت. تُرفع إلى الخادم وتُصغَّر تلقائيًا.</div></div></div><span class="err" role="alert"></span></div>`;
+  <div><input type="file" accept="image/*" data-imgin><div class="hint" style="margin-top:6px">JPG أو PNG أو WEBP، حتى 4 ميغابايت. تُرفع إلى الخادم وتُصغَّر تلقائيًا.</div></div></div><span class="err" role="alert"></span></div>`;
 }
 function wireImgField(form) {
   const inp = $('[data-imgin]', form); if (!inp) return;

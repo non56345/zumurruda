@@ -7,8 +7,7 @@
 from flask import Flask, jsonify, make_response, redirect, request, send_from_directory
 
 from .config import Config
-from .db import close_db, connect, init_schema
-from .seed_loader import seed
+from .db import close_db
 
 
 def create_app(overrides=None):
@@ -18,13 +17,7 @@ def create_app(overrides=None):
         app.config.update(overrides)
     root = app.config["ROOT"]
 
-    # تهيئة القاعدة عند الإقلاع: إنشاء الجداول، واستيراد البيانات الأولية إن كانت فارغة.
-    conn = connect(app.config["DATABASE"])
-    try:
-        init_schema(conn)
-        seed(conn)
-    finally:
-        conn.close()
+    app.secret_key = app.config["SECRET_KEY"]
     app.teardown_appcontext(close_db)
     from .render import Template
     from .seed_loader import read_seed
@@ -38,7 +31,8 @@ def create_app(overrides=None):
         from .render import render_cached
         from .store import get_rev
         db = get_db()
-        page = render_cached(root / "index.html", db, get_rev(db), app.config["DATABASE"])
+        db_id = f"{app.config['MONGODB_DB']}:{id(db)}"
+        page = render_cached(root / "index.html", db, get_rev(db), db_id)
         resp = make_response(page)
         resp.headers["Content-Type"] = "text/html; charset=utf-8"
         resp.headers["Cache-Control"] = "no-cache"          # تظهر تعديلات اللوحة فوراً
@@ -46,13 +40,24 @@ def create_app(overrides=None):
 
     @app.get("/images/<path:name>")
     def public_images(name):
-        return send_from_directory(root / "images", name)
+        return send_from_directory(root / "images", name, max_age=86400)
 
     @app.get("/uploads/<path:name>")
     def public_uploads(name):
-        if name.startswith(".") or "/" in name:
+        from . import uploads
+        if not name or name.startswith(".") or "/" in name or any(c not in uploads.NAME_OK for c in name):
             return "404 Not Found", 404
-        return send_from_directory(app.config["UPLOADS"], name, max_age=31536000)
+        from .db import get_db
+        db = get_db()
+        doc = db.uploads.find_one({"_id": name})
+        if not doc or "data" not in doc:
+            return "404 Not Found", 404
+        resp = make_response(bytes(doc["data"]))
+        resp.headers["Content-Type"] = doc.get("content_type", "image/jpeg")
+        resp.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        resp.headers["ETag"] = name
+        resp.headers["X-Content-Type-Options"] = "nosniff"
+        return resp
 
     @app.get("/robots.txt")
     def robots():
@@ -105,7 +110,7 @@ def create_app(overrides=None):
     @app.errorhandler(413)
     def _too_large(_e):
         if _is_api():
-            return jsonify(error="too_large", message="حجم الملف أكبر من المسموح (10 ميغابايت)."), 413
+            return jsonify(error="too_large", message="حجم الملف أكبر من المسموح (4 ميغابايت)."), 413
         return "413 Payload Too Large", 413
 
     @app.errorhandler(405)

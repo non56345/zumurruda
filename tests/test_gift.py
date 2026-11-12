@@ -126,13 +126,11 @@ class TestAdmin(GiftBase):
 
 class TestIsolation(GiftBase):
     def test_existing_data_untouched(self):
-        from server.db import connect
-        conn = connect(self.app.config["DATABASE"])
-        try:
-            self.assertEqual(conn.execute("SELECT COUNT(*) FROM price_items").fetchone()[0], 55)
-            self.assertEqual(conn.execute("SELECT COUNT(*) FROM gift_orders").fetchone()[0], 0)
-        finally:
-            conn.close()
+        self.c.get("/api/health")
+        from server.seed_loader import counts
+        db = self.app.mongo_client[self.app.config["MONGODB_DB"]]
+        self.assertEqual(counts(db)["price_items"], 55)
+        self.assertEqual(db.gift_orders.count_documents({}), 0)
 
     def test_card_image_unchanged_and_no_overlay(self):
         import hashlib

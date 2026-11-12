@@ -4,7 +4,13 @@
 <h1>لوحة تحكم الزُمردة</h1>
 <p class="sub">تسجيل دخول المديرة</p>
 {% if error %}<div class="msg err" role="alert">{{ error }}</div>{% endif %}
-{% if not has_admin %}<div class="msg err" role="note">لم يُنشأ حساب المديرة بعد. يُنشأ مرة واحدة عبر الخادم بالأمر <span dir="ltr">python3 manage.py create-admin</span>.</div>{% endif %}
+{% if not has_admin %}
+  {% if setup_enabled %}
+    <div class="msg ok" role="note">لم يُنشأ حساب المديرة بعد. <a href="/admin/setup" style="color:var(--emerald-d);font-weight:600;text-decoration:underline;">إعداد الحساب لأول مرة</a>.</div>
+  {% else %}
+    <div class="msg err" role="note">لم يُنشأ حساب بعد. أضيفي SETUP_TOKEN في إعدادات Vercel ثم أعيدي النشر.</div>
+  {% endif %}
+{% endif %}
 <form method="post" action="/admin/login" autocomplete="on">
   <input type="hidden" name="csrf_token" value="{{ csrf }}">
   <input type="hidden" name="next" value="{{ next }}">

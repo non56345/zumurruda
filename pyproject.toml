@@ -1,0 +1,10 @@
+[project]
+name = "zumurruda"
+version = "1.0.0"
+requires-python = ">=3.12"
+dependencies = [
+    "Flask>=3.0,<4",
+    "Pillow>=10.3",
+    "pymongo[srv]>=4.7",
+    "dnspython>=2.6",
+]

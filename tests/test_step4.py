@@ -11,8 +11,7 @@ sys.path.insert(0, str(ROOT / "tests"))
 
 from PIL import Image  # noqa: E402
 
-from helpers import USER, add_admin, csrf_of, login, make_app  # noqa: E402
-from server.db import connect  # noqa: E402
+from helpers import USER, add_admin, connect, csrf_of, login, make_app  # noqa: E402
 from server.seed_loader import read_seed  # noqa: E402
 
 SEED = read_seed()
@@ -148,29 +147,26 @@ class TestState(Base):
         self.assertEqual(r.status_code, 200)
         for k in KEYS:
             self.assertEqual(r.get_json()["state"][k], SEED[k], k)
-        backups = list((Path(self.app.config["DATABASE"]).parent / "backups").glob("*reset*.db"))
+        db = self.app.mongo_client[self.app.config["MONGODB_DB"]]
+        backups = list(db.site_backups.find({"reason": "reset"}))
         self.assertEqual(len(backups), 1)
         # النسخة الاحتياطية تحتوي البيانات قبل الاستعادة (بلا أقسام أسعار)
-        self.assertEqual(connect(str(backups[0])).execute("SELECT COUNT(*) FROM price_cats").fetchone()[0], 0)
+        self.assertEqual(len(backups[0]["doc"].get("priceCats", [])), 0)
 
     def test_import_flag_makes_backup(self):
         self.auth()
         st, rev = self.get_state()
         self.assertEqual(self.put(st, rev, **{"import": True}).status_code, 200)
-        self.assertTrue(list((Path(self.app.config["DATABASE"]).parent / "backups").glob("*import*.db")))
-
-    def test_periodic_backup_only_once_per_interval(self):
-        self.auth()
-        for _ in range(3):
-            st, rev = self.get_state()
-            self.assertEqual(self.put(st, rev).status_code, 200)
-        self.assertEqual(len(list((Path(self.app.config["DATABASE"]).parent / "backups").glob("*auto*.db"))), 1)
+        db = self.app.mongo_client[self.app.config["MONGODB_DB"]]
+        self.assertTrue(list(db.site_backups.find({"reason": "import"})))
 
     def test_manual_backup_endpoint(self):
         h = self.auth()
         r = self.c.post("/api/admin/backup", headers=h)
         self.assertEqual(r.status_code, 200)
-        self.assertIn("manual", r.get_json()["file"])
+        self.assertTrue(r.get_json()["file"])
+        db = self.app.mongo_client[self.app.config["MONGODB_DB"]]
+        self.assertTrue(list(db.site_backups.find({"reason": "manual"})))
 
 
 class TestValidation(Base):
@@ -260,8 +256,10 @@ class TestUpload(Base):
         j = r.get_json()
         self.assertRegex(j["src"], r"^uploads/[0-9a-f]{20}\.jpg$")
         self.assertEqual((j["width"], j["height"]), (1600, 800))
-        f = self.app.config["UPLOADS"] / j["src"].split("/")[1]
-        data = f.read_bytes()
+        name = j["src"].split("/")[1]
+        db = self.app.mongo_client[self.app.config["MONGODB_DB"]]
+        doc = db.uploads.find_one({"_id": name})
+        data = bytes(doc["data"])
         self.assertNotIn(b"SecretCameraMaker", data)
         # يُقدَّم للعامة
         self.c.delete_cookie("zum_sid")
@@ -274,7 +272,10 @@ class TestUpload(Base):
         j = r.get_json()
         self.assertTrue(j["src"].endswith(".png"))
         self.assertEqual(j["width"], 700)
-        im = Image.open(self.app.config["UPLOADS"] / j["src"].split("/")[1])
+        name = j["src"].split("/")[1]
+        db = self.app.mongo_client[self.app.config["MONGODB_DB"]]
+        doc = db.uploads.find_one({"_id": name})
+        im = Image.open(io.BytesIO(bytes(doc["data"])))
         self.assertEqual(im.mode, "RGBA")
 
     def test_webp_and_gif_accepted(self):
@@ -287,10 +288,11 @@ class TestUpload(Base):
             r = self.up(data, name)
             self.assertEqual(r.status_code, 400, name)
         self.assertEqual(self.c.post("/api/admin/upload", data={}, headers={"X-CSRF-Token": self.tok}).status_code, 400)
-        self.assertFalse(any(self.app.config["UPLOADS"].glob("*")) if self.app.config["UPLOADS"].exists() else False)
+        db = self.app.mongo_client[self.app.config["MONGODB_DB"]]
+        self.assertEqual(db.uploads.count_documents({}), 0)
 
     def test_too_large(self):
-        r = self.up(b"\xff" * (13 * 1024 * 1024))
+        r = self.up(b"\xff" * (5 * 1024 * 1024))
         self.assertEqual(r.status_code, 413)
 
     def test_uploaded_image_usable_in_state(self):

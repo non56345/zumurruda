@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from server import create_app            # noqa: E402
+from helpers import make_app  # noqa: E402
 from server.seed_loader import read_seed  # noqa: E402
 
 SEED = read_seed()
@@ -19,14 +19,13 @@ def dumps(o):
 class Step2(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.tmp = tempfile.TemporaryDirectory()
-        cls.dbpath = str(Path(cls.tmp.name) / "t.db")
-        cls.app = create_app({"DATABASE": cls.dbpath, "TESTING": True, "PREFERRED_URL_SCHEME": "https"})
+        cls.app = make_app()
         cls.c = cls.app.test_client()
+        cls.dbpath = "t.db"
 
     @classmethod
     def tearDownClass(cls):
-        cls.tmp.cleanup()
+        pass
 
     def get(self, url):
         r = self.c.get(url)
@@ -157,13 +156,10 @@ class Step2(unittest.TestCase):
         self.assertEqual(r.headers["X-Content-Type-Options"], "nosniff")
 
     def test_db_file_unchanged_by_reads(self):
-        import hashlib, glob
-        def h():
-            return hashlib.sha256(Path(self.dbpath).read_bytes()).hexdigest()
-        before = h()
+        before = self.get("/api/site")
         for u in ("/api/site", "/api/prices", "/api/services/skin"):
             self.c.get(u)
-        self.assertEqual(before, h())
+        self.assertEqual(before, self.get("/api/site"))
 
 
 if __name__ == "__main__":

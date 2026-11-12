@@ -1,120 +1,88 @@
-# النشر الفعلي على الإنترنت
+# دليل النشر: MongoDB Atlas وVercel Serverless
 
-الموقع تطبيق Python (Flask) بقاعدة SQLite، لذلك يحتاج استضافة تشغّل Python.
-الاستضافة التي تقبل ملفات HTML فقط لا تكفي. يوجد خياران:
-
-- **أ) خادم VPS بنظام Ubuntu:** الأفضل والأكثر تحكماً، وتكلفته عادة 5 دولارات شهرياً أو أكثر.
-- **ب) استضافة مشتركة فيها cPanel مع خاصية «Setup Python App».**
-
-في الحالتين يلزم:
-
-- **نطاق (دومين)** موجّه إلى الخادم.
-- **HTTPS** إلزامي، لأن كوكي الجلسة لا يُرسل إلا عبره.
+يعمل موقع الزُمردة كدالة خادم غير ممركّزة (Python Serverless Function) على **Vercel**، وتُخزن كل بيانات الموقع والصور المرفوعة وسجلات الطلبات والمستخدمين في قاعدة بيانات **MongoDB Atlas**.
 
 ---
 
-## قبل النشر (على جهازكِ)
+## 1. إعداد قاعدة البيانات على MongoDB Atlas (مرة واحدة)
 
-1. شغّلي الاختبارات: `windows\run-tests.bat`. يجب أن تنتهي بكلمة `OK`.
-2. إن كانت عندكِ بيانات عدّلتِها محلياً وتريدين نقلها، فلديكِ طريقتان:
-   - انسخي `data\zumurrud.db` ومجلد `uploads\` إلى الخادم.
-   - أو صدّري نسخة JSON من اللوحة («الرئيسية» ← «تصدير نسخة JSON»)، ثم استورديها في لوحة الخادم.
+1. **إنشاء حساب وCluster مجاني:**
+   - ادخلي إلى [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+   - أنشئي Cluster مجاني من نوع **M0**.
+   - اختاري المزود والمنطقة: **AWS eu-central-1 (Frankfurt)** (الأقرب جغرافياً لليبيا ولخوادم Vercel `fra1`).
 
----
+2. **صلاحيات الوصول لقاعدة البيانات (Database Access):**
+   - أنشئي مستخدماً جديداً (مثلاً: `zumurrud_user`).
+   - حددي الصلاحية: **Read and write to any database** أو خصصي الصلاحية لـ `readWrite` على قاعدة `zumurruda`.
+   - اختاري كلمة مرور قوية دون رموز خاصة معقدة، أو قومي بترميزها (URL-encode) في رابط الاتصال.
 
-## أ) خادم Ubuntu + nginx + HTTPS
+3. **صلاحيات الشبكة (Network Access):**
+   - أضيفي عنوان IP: `0.0.0.0/0` (Allow Access from Anywhere) لأن خوادم Vercel Serverless تستخدم عناوين IP متغيرة وديناميكية.
 
-```bash
-# 1. المتطلبات
-sudo apt update && sudo apt install -y python3 python3-venv nginx certbot python3-certbot-nginx
-sudo adduser --system --group --home /srv/zumurrud zumurrud
-
-# 2. رفع المشروع (من جهازكِ: scp أو WinSCP أو git) إلى /srv/zumurrud ثم:
-cd /srv/zumurrud
-sudo -u zumurrud python3 -m venv .venv
-sudo -u zumurrud .venv/bin/pip install -r requirements.txt
-
-# 3. الإعدادات
-sudo -u zumurrud cp .env.example .env
-sudo -u zumurrud nano .env        # اضبطي: ZUM_COOKIE_SECURE=1  و  ZUM_PROXY_HOPS=1
-
-# 4. القاعدة والحساب
-sudo -u zumurrud .venv/bin/python manage.py init-db
-sudo -u zumurrud .venv/bin/python manage.py create-admin
-sudo -u zumurrud .venv/bin/python manage.py check     # يجب أن تكون النتيجة: جاهز للنشر.
-
-# 5. الخدمة الدائمة (تعمل تلقائياً بعد إعادة التشغيل)
-sudo cp deploy/zumurrud.service /etc/systemd/system/
-sudo systemctl daemon-reload && sudo systemctl enable --now zumurrud
-sudo systemctl status zumurrud
-
-# 6. nginx + الشهادة
-sudo cp deploy/nginx-zumurrud.conf /etc/nginx/sites-available/zumurrud
-sudo nano /etc/nginx/sites-available/zumurrud     # استبدلي example.ly بنطاقكِ
-sudo ln -s /etc/nginx/sites-available/zumurrud /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl reload nginx
-sudo certbot --nginx -d نطاقك.ly -d www.نطاقك.ly
-
-# 7. نسخ احتياطي يومي
-sudo -u zumurrud crontab -e       # الصقي السطر الموجود في deploy/backup-cron.txt
-```
-
-**تحديث الموقع لاحقاً:**
-
-1. ارفعي الملفات الجديدة، ولا تستبدلي `data/` ولا `uploads/` ولا `.env`.
-2. نفّذي:
-   ```bash
-   sudo systemctl restart zumurrud
-   ```
+4. **نسخ رابط الاتصال (Connection String):**
+   - من لوحة Atlas اضغطي **Connect** ← **Drivers** ← **Python**.
+   - انسخي الرابط بالصيغة:
+     ```text
+     mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
+     ```
 
 ---
 
-## ب) استضافة cPanel («Setup Python App»)
+## 2. النشر على Vercel وضبط متغيرات البيئة
 
-1. في cPanel افتحي **Setup Python App** ← **Create Application**:
-   - Python version: 3.11 أو أحدث.
-   - Application root: `zumurrud`
-   - Application URL: النطاق الرئيسي.
-   - Application startup file: `passenger_wsgi.py`
-   - Application Entry point: `application`
-2. ارفعي ملفات المشروع إلى مجلد `zumurrud` من **File Manager**: ارفعي ملف ZIP ثم فكّيه.
-3. في صفحة التطبيق أضيفي متغيرات البيئة:
-   - `ZUM_COOKIE_SECURE=1`
-   - `ZUM_PROXY_HOPS=1`
-4. اضغطي **Run Pip Install** واختاري `requirements.txt`.
-5. من **Terminal** في cPanel، أو بالأمر الظاهر أعلى صفحة التطبيق لتفعيل البيئة:
-   ```
-   cd ~/zumurrud
-   python manage.py init-db
-   python manage.py create-admin
-   python manage.py check
-   ```
-6. فعّلي **SSL/TLS Status ← AutoSSL** للنطاق، ثم اضغطي **Restart** للتطبيق.
+1. **ربط المستودع بـ Vercel:**
+   - سجّلي الدخول إلى [Vercel](https://vercel.com) واختاري **Add New...** ← **Project**.
+   - استوردي مستودع `zumurruda` من GitHub.
 
-> بعض الاستضافات المشتركة لا تسمح بعمليات الكتابة الكثيرة أو تحذف الملفات المؤقتة. لذلك تأكدي أن مجلدي `data/` و`uploads/` داخل مجلد التطبيق وقابلان للكتابة، وأن `python manage.py check` يقول «جاهز للنشر».
+2. **إضافة متغيرات البيئة (Environment Variables):**
+   - في صفحة إعداد المشروع (أو من **Project Settings** ← **Environment Variables**)، أضيفي المتغيرات التالية واختاري تطبيقهما على بيئتي **Production** و **Preview**:
 
----
-
-## بعد النشر — قائمة تحقق
-
-- [ ] `https://نطاقك/` يفتح الموقع، والفيديو يعمل في الواجهة.
-- [ ] `https://نطاقك/admin/` يطلب تسجيل الدخول، والدخول يعمل.
-- [ ] عدّلي سعراً من اللوحة وتأكدي أنه ظهر في الموقع، ثم أرجعيه.
-- [ ] أضيفي من «محتوى الموقع ← بيانات التواصل» رابط فيسبوك ورقم واتساب ورابط الخريطة.
-- [ ] جرّبي زر «استفسري» وزر واتساب العائم من الجوال.
-- [ ] `http://نطاقك` (بدون s) يحوّل تلقائياً إلى https.
-- [ ] نفّذي `python manage.py backup` مرة، وتأكدي من ظهور الملف في `data/backups/`.
-- [ ] انسخي `data/backups/` و`uploads/` إلى مكان خارج الخادم دورياً (أسبوعياً على الأقل).
-
-## الإعدادات (ملف .env)
-
-| المتغير | الافتراضي | الوصف |
+| المتغير | القيمة المطلوبة / المقترحة | الوصف |
 |---|---|---|
-| `ZUM_HOST` / `ZUM_PORT` | `127.0.0.1` / `8000` | عنوان ومنفذ الخادم |
-| `ZUM_DB` | `data/zumurrud.db` | مسار القاعدة |
-| `ZUM_UPLOADS` | `uploads/` | مجلد الصور المرفوعة |
-| `ZUM_COOKIE_SECURE` | `1` | يجب أن يبقى 1 على الإنترنت |
-| `ZUM_PROXY_HOPS` | `0` | 1 خلف nginx أو cPanel، ليُقرأ عنوان IP الحقيقي في تقييد المحاولات |
-| `ZUM_SESSION_IDLE` / `ZUM_SESSION_MAX` | `1800` / `28800` | خمول الجلسة وحدها الأقصى بالثواني |
-| `ZUM_BACKUP_INTERVAL` | `21600` | الفترة بين النسخ التلقائية عند الحفظ |
-| `ZUM_THREADS` | `8` | عدد خيوط waitress |
+| `MONGODB_URI` | `mongodb+srv://user:pass@cluster0...` | رابط الاتصال بقاعدة Atlas |
+| `MONGODB_DB` | `zumurruda` | اسم قاعدة البيانات |
+| `SECRET_KEY` | نص عشوائي طويل (64 حرفاً على الأقل) | مفتاح تشفير الجلسات والأمان |
+| `SETUP_TOKEN` | نص عشوائي سري (24 حرفاً على الأقل) | رمز صفحة الإعداد الأولي للمديرة |
+| `ZUM_COOKIE_SECURE` | `1` | حماية الكوكيز مع HTTPS (إلزامي في الإنتاج) |
+| `ZUM_PROXY_HOPS` | `1` | لقراءة IP الزائر الحقيقي خلف وكيل Vercel |
+| `ZUM_AUTO_INIT` | `1` | التجهيز التلقائي للبيانات والفهارس |
+
+3. **النشر (Deploy):**
+   - اضغطي **Deploy**. يقوم Vercel ببناء ونشر المشروع تلقائياً بناءً على `vercel.json` ونقطة الدخول `app.py`.
+
+---
+
+## 3. الإعداد الأولي وإنشاء حساب المديرة (مرة واحدة)
+
+1. بمجرد اكتمال النشر، زوري رابط موقعكِ في المتصفح.
+2. ستُهيأ قاعدة البيانات وفهارسها ووثيقة الموقع تلقائياً مع أول طلب.
+3. افتحي صفحة الإعداد الأولي:
+   ```text
+   https://your-domain.vercel.app/admin/setup
+   ```
+4. أدخلي رمز `SETUP_TOKEN` السري الذي حددتِه في متغيرات البيئة، ثم اختاري اسم مستخدم وكلمة مرور قوية للمديرة.
+5. بعد الضغط على **إنشاء الحساب**، يُقفل مسار `/admin/setup` نهائياً ويعيد 404 لكل الطلبات اللاحقة حمايةً للموقع.
+6. يمكنكِ الآن تسجيل الدخول مباشرة عبر `/admin/login` وإدارة محتوى الموقع بالكامل.
+
+---
+
+## 4. استعادة الحساب في حالات الطوارئ (Emergency Recovery)
+
+إذا فُقدت كلمة المرور أو أردتِ إعادة تفعيل صفحة `/admin/setup`:
+1. ادخلي إلى لوحة **MongoDB Atlas** ← **Browse Collections**.
+2. افتحي قاعدة `zumurruda`.
+3. في collection `users`: احذفي وثيقة المديرة.
+4. في collection `meta`: احذفي الوثيقة ذات المعرّف `_id: "admin_lock"` إن وُجدت.
+5. ستفتح صفحة `/admin/setup` مجدداً باستخدام `SETUP_TOKEN` لتعيين حساب جديد.
+
+---
+
+## 5. النسخ الاحتياطي وإدارة البيانات
+
+- **النسخ الشامل:** يتم تلقائياً بواسطة **Atlas Backups** (نسخ سحابي يومي مستمر مع إمكانية الاسترجاع لأي نقطة زمنية).
+- **النسخ اليدوي للموقع:** من لوحة تحكم الإدارة، يمكنكِ تصدير نسخة JSON لبيانات الموقع في أي وقت، كما يتم حفظ لقطة احتياطية في `site_backups` تلقائياً قبل أي عملية استيراد أو إعادة ضبط.
+
+---
+
+## ملحق: النشر التقليدي على VPS (Legacy)
+> ملاحظة: هذا الخيار قديم وكان مستعملاً مع SQLite. تم استبداله كلياً بالنشر السحابي Serverless على Vercel وAtlas.

@@ -13,9 +13,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tests"))
 
-from helpers import PASSWORD, USER, add_admin, csrf_of, login, make_app  # noqa: E402
+from helpers import PASSWORD, USER, add_admin, connect, csrf_of, login, make_app  # noqa: E402
 from server import auth                                                   # noqa: E402
-from server.db import connect                                             # noqa: E402
 
 GET_APIS = ["/api/health", "/api/site", "/api/services", "/api/services/skin", "/api/prices",
             "/api/prices/skin", "/api/products", "/api/products/p1", "/api/content", "/api/contact",
@@ -45,26 +44,25 @@ class AuthBase(unittest.TestCase):
         self.c = self.app.test_client()
 
     def tearDown(self):
-        self.app._tmp.cleanup()
+        pass
 
     def db(self):
-        return connect(self.app.config["DATABASE"])
+        return self.app.mongo_client[self.app.config["MONGODB_DB"]]
 
 
 class TestAccounts(unittest.TestCase):
     def setUp(self):
         self.app = make_app()
-        self.conn = connect(self.app.config["DATABASE"])
+        self.conn = self.app.mongo_client[self.app.config["MONGODB_DB"]]
 
     def tearDown(self):
-        self.conn.close()
-        self.app._tmp.cleanup()
+        pass
 
     def test_no_default_account(self):
-        self.assertEqual(self.conn.execute("SELECT COUNT(*) FROM users").fetchone()[0], 0)
+        self.assertEqual(self.conn.users.count_documents({}), 0)
         c = self.app.test_client()
         r = c.get("/admin/login")
-        self.assertIn("create-admin", r.get_data(as_text=True))
+        self.assertIn("/admin/setup", r.get_data(as_text=True))
         self.assertEqual(login(c, "admin", "admin").status_code, 401)
 
     def test_validation(self):
@@ -74,20 +72,14 @@ class TestAccounts(unittest.TestCase):
         for u, p in bad:
             with self.assertRaises(ValueError, msg=(u, p)):
                 auth.create_admin(self.conn, u, p)
-        self.assertEqual(self.conn.execute("SELECT COUNT(*) FROM users").fetchone()[0], 0)
+        self.assertEqual(self.conn.users.count_documents({}), 0)
 
     def test_hashed_not_plaintext(self):
         auth.create_admin(self.conn, "Manager1", PASSWORD)      # يُطبَّع إلى أحرف صغيرة
-        row = self.conn.execute("SELECT * FROM users").fetchone()
+        row = self.conn.users.find_one()
         self.assertEqual(row["username"], "manager1")
         self.assertTrue(row["password_hash"].startswith(("scrypt:", "pbkdf2:")))
         self.assertNotIn(PASSWORD, row["password_hash"])
-        self.conn.close()
-        for suffix in ("", "-wal"):
-            f = Path(self.app.config["DATABASE"] + suffix)
-            if f.exists():
-                self.assertNotIn(PASSWORD.encode(), f.read_bytes())
-        self.conn = connect(self.app.config["DATABASE"])
 
     def test_salted(self):
         a = auth.generate_password_hash(PASSWORD)
@@ -114,7 +106,7 @@ class TestLogin(AuthBase):
         self.assertNotIn("expires", low)
         token = ck.split(";")[0].split("=", 1)[1]
         self.assertGreaterEqual(len(token), 40)
-        row = self.db().execute("SELECT token_hash FROM sessions").fetchone()
+        row = self.db().sessions.find_one()
         self.assertEqual(row["token_hash"], hashlib.sha256(token.encode()).hexdigest())
         self.assertNotEqual(row["token_hash"], token)
         self.assertEqual(self.c.get("/admin/").status_code, 200)
@@ -190,15 +182,15 @@ class TestLogin(AuthBase):
     def test_events_logged_without_secrets(self):
         login(self.c, USER, "Wrong-Password-123!")
         login(self.c)
-        rows = self.db().execute("SELECT * FROM auth_events").fetchall()
+        rows = list(self.db().auth_events.find())
         self.assertEqual([r["event"] for r in rows], ["login_fail", "login_ok"])
-        blob = " ".join(str(tuple(r)) for r in rows)
+        blob = " ".join(str(r) for r in rows)
         self.assertNotIn("Wrong-Password", blob)
         self.assertNotIn(PASSWORD, blob)
 
     def test_unknown_username_not_stored_in_log(self):
         login(self.c, "mypassword-typed-here", "x")
-        r = self.db().execute("SELECT username FROM auth_events").fetchone()
+        r = self.db().auth_events.find_one()
         self.assertIsNone(r["username"])
 
 
@@ -309,7 +301,7 @@ class TestLogout(AuthBase):
         self.assertEqual(r.status_code, 200)
         self.assertIn("zum_sid=;", sid_cookie(r))              # حُذف الكوكي
         self.assertEqual(self.c.get("/admin/").status_code, 302)
-        self.assertEqual(self.db().execute("SELECT COUNT(*) FROM sessions").fetchone()[0], 0)
+        self.assertEqual(self.db().sessions.count_documents({}), 0)
         # إعادة استخدام الكوكي القديم (سرقة/إعادة تشغيل) تفشل لأن الجلسة أُلغيت في الخادم
         other = self.app.test_client()
         other.set_cookie("zum_sid", old_cookie)
@@ -352,7 +344,7 @@ class TestExpiry(AuthBase):
             r = self.c.get("/admin/")
             self.assertEqual(r.status_code, 302)
             self.assertEqual(self.c.get("/admin/session").status_code, 401)
-            self.assertEqual(self.db().execute("SELECT COUNT(*) FROM sessions").fetchone()[0], 0)
+            self.assertEqual(self.db().sessions.count_documents({}), 0)
 
     def test_absolute_expiry_even_if_active(self):
         clk = Clock()
@@ -382,10 +374,8 @@ class TestExpiry(AuthBase):
 
     def test_session_dies_if_user_deleted(self):
         login(self.c)
-        conn = self.db()
-        with conn:
-            conn.execute("DELETE FROM users")
-        conn.close()
+        db = self.db()
+        db.users.delete_many({})
         self.assertEqual(self.c.get("/admin/session").status_code, 401)
 
 
@@ -474,38 +464,38 @@ class TestPasswordChange(AuthBase):
 
 
 class TestCLI(unittest.TestCase):
-    def run_cli(self, db, *args, stdin=""):
-        env = dict(os.environ, ZUM_DB=db)
-        return subprocess.run([sys.executable, "manage.py", *args], cwd=ROOT, env=env,
-                              input=stdin, capture_output=True, text=True, timeout=60)
+    def setUp(self):
+        self.app = make_app()
+        self.db = self.app.mongo_client[self.app.config["MONGODB_DB"]]
 
     def test_create_and_change_password(self):
-        with tempfile.TemporaryDirectory() as d:
-            db = str(Path(d) / "c.db")
-            r = self.run_cli(db, "create-admin", stdin=f"{USER}\n{PASSWORD}\n{PASSWORD}\n")
-            self.assertEqual(r.returncode, 0, r.stderr + r.stdout)
-            self.assertNotIn(PASSWORD, r.stdout + r.stderr)
-            conn = sqlite3.connect(db)
-            h = conn.execute("SELECT password_hash FROM users").fetchone()[0]
-            self.assertTrue(h.startswith("scrypt:"))
-            conn.close()
-            r = self.run_cli(db, "create-admin", stdin=f"another1\n{PASSWORD}\n{PASSWORD}\n")
-            self.assertNotEqual(r.returncode, 0)
-            new = "Lavender-Terrace-4455!"
-            r = self.run_cli(db, "change-password", stdin=f"{new}\n{new}\n")
-            self.assertEqual(r.returncode, 0, r.stderr + r.stdout)
-            self.assertNotIn(new, r.stdout + r.stderr)
-            app = make_app(DATABASE=db)
-            self.assertEqual(login(app.test_client(), USER, new).status_code, 302)
-            self.assertEqual(login(app.test_client(), USER, PASSWORD).status_code, 401)
-            app._tmp.cleanup()
+        import manage
+        with mock.patch("manage._ask", side_effect=[USER, PASSWORD, PASSWORD]):
+            r = manage.admin_command("create-admin", self.db)
+            self.assertEqual(r, 0)
+            user = self.db.users.find_one({"username": USER})
+            self.assertIsNotNone(user)
+            self.assertTrue(user["password_hash"].startswith("scrypt:"))
+
+        with mock.patch("manage._ask", side_effect=["another1", PASSWORD, PASSWORD]):
+            r = manage.admin_command("create-admin", self.db)
+            self.assertNotEqual(r, 0)
+
+        new = "Lavender-Terrace-4455!"
+        with mock.patch("manage._ask", side_effect=[new, new]):
+            r = manage.admin_command("change-password", self.db)
+            self.assertEqual(r, 0)
+            c = self.app.test_client()
+            self.assertEqual(login(c, USER, new).status_code, 302)
+            c2 = self.app.test_client()
+            self.assertEqual(login(c2, USER, PASSWORD).status_code, 401)
 
     def test_mismatch_rejected(self):
-        with tempfile.TemporaryDirectory() as d:
-            db = str(Path(d) / "c.db")
-            r = self.run_cli(db, "create-admin", stdin=f"{USER}\n{PASSWORD}\nsomething-else-1234\n")
-            self.assertNotEqual(r.returncode, 0)
-            self.assertEqual(sqlite3.connect(db).execute("SELECT COUNT(*) FROM users").fetchone()[0], 0)
+        import manage
+        with mock.patch("manage._ask", side_effect=[USER, PASSWORD, "something-else-1234"]):
+            r = manage.admin_command("create-admin", self.db)
+            self.assertNotEqual(r, 0)
+            self.assertEqual(self.db.users.count_documents({}), 0)
 
 
 class TestNoSecretsInSource(unittest.TestCase):

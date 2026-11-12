@@ -1,94 +1,145 @@
-"""قراءة بيانات الموقع من SQLite بنفس بنية البيانات الأولية (seed.js) وترتيبها.
+"""قراءة بيانات الموقع من MongoDB (وثيقة site) بنفس بنية البيانات الأولية (seed.js) وترتيبها.
 
-للقراءة فقط. لا تُرجع أي أعمدة داخلية (معرّفات الجداول، sort، original_src، meta).
+للقراءة فقط. لا تُرجع أي حقول داخلية (original_src, meta, rev, schema).
 """
 import json
 
 
-def _all(conn, q, *a):
-    return conn.execute(q, a).fetchall()
+def _site(db_or_doc):
+    if isinstance(db_or_doc, dict):
+        return db_or_doc
+    return db_or_doc.site.find_one({"_id": "site"}) or {}
 
 
-def content(conn):
-    return {r["key"]: r["value"] for r in _all(conn, "SELECT key,value FROM content ORDER BY sort")}
+def content(db_or_doc):
+    doc = _site(db_or_doc)
+    return doc.get("content", {})
 
 
-def content_fields(conn):
-    return [{"key": r["key"], "label": r["label"], "group": r["grp"], "type": r["type"]}
-            for r in _all(conn, "SELECT * FROM content ORDER BY sort")]
+def content_fields(db_or_doc):
+    doc = _site(db_or_doc)
+    fields = doc.get("contentFields", [])
+    return [
+        {
+            "key": f["key"],
+            "label": f["label"],
+            "group": f.get("group", f.get("grp")),
+            "type": f.get("type", "text"),
+        }
+        for f in fields
+    ]
 
 
-def contact(conn):
-    return {r["key"]: r["value"] for r in _all(conn, "SELECT key,value FROM contact ORDER BY rowid")}
+def contact(db_or_doc):
+    doc = _site(db_or_doc)
+    return doc.get("contact", {})
 
 
-def _service(r):
-    s = {"id": r["id"], "name": r["name"], "en": r["en"], "desc": r["desc"],
-         "group": r["grp"], "slot": r["slot"], "price": r["price"]}
-    return {k: v for k, v in s.items() if v is not None}
+def _service(s):
+    out = {"id": s["id"], "name": s["name"]}
+    for k in ("en", "desc", "group", "slot", "price"):
+        if s.get(k) is not None:
+            out[k] = s[k]
+    return out
 
 
-def services(conn):
-    return [_service(r) for r in _all(conn, "SELECT * FROM services ORDER BY sort")]
+def services(db_or_doc):
+    doc = _site(db_or_doc)
+    return [_service(s) for s in doc.get("services", [])]
 
 
-def service(conn, sid):
-    r = conn.execute("SELECT * FROM services WHERE id=?", (sid,)).fetchone()
-    return _service(r) if r else None
+def service(db_or_doc, sid):
+    for s in services(db_or_doc):
+        if s["id"] == sid:
+            return s
+    return None
 
 
-def _price_cat(conn, c):
-    cat = {"id": c["id"], "t": c["title"]}
-    if c["note"] is not None:
+def _price_cat(c):
+    cat = {"id": c["id"], "t": c.get("t", c.get("title"))}
+    if c.get("note") is not None:
         cat["note"] = c["note"]
     cat["groups"] = []
-    for g in _all(conn, "SELECT * FROM price_groups WHERE cat_id=? ORDER BY sort", c["id"]):
+    for g in c.get("groups", []):
         grp = {}
-        if g["pk"] is not None:
+        if g.get("pk") is not None:
             grp["pk"] = g["pk"]
-        if g["title"] is not None:
+        if g.get("g") is not None:
+            grp["g"] = g["g"]
+        elif g.get("title") is not None:
             grp["g"] = g["title"]
-        grp["items"] = []
-        for it in _all(conn, "SELECT * FROM price_items WHERE group_id=? ORDER BY sort", g["id"]):
-            item = {"n": it["name"], "p": it["price"]}
-            if it["includes"] is not None:
-                item["inc"] = json.loads(it["includes"])
-            if it["star"] is not None:
+        items = []
+        for it in g.get("items", []):
+            item = {"n": it.get("n", it.get("name")), "p": it.get("p", it.get("price"))}
+            inc = it.get("inc") if "inc" in it else it.get("includes")
+            if inc is not None:
+                item["inc"] = inc if isinstance(inc, list) else json.loads(inc)
+            if it.get("star") is not None:
                 item["star"] = it["star"]
-            if it["desc"] is not None:
-                item["d"] = it["desc"]
-            grp["items"].append(item)
+            desc = it.get("d") if "d" in it else it.get("desc")
+            if desc is not None:
+                item["d"] = desc
+            items.append(item)
+        grp["items"] = items
         cat["groups"].append(grp)
     return cat
 
 
-def price_cats(conn):
-    return [_price_cat(conn, c) for c in _all(conn, "SELECT * FROM price_cats ORDER BY sort")]
+def price_cats(db_or_doc):
+    doc = _site(db_or_doc)
+    return [_price_cat(c) for c in doc.get("priceCats", [])]
 
 
-def price_cat(conn, cid):
-    c = conn.execute("SELECT * FROM price_cats WHERE id=?", (cid,)).fetchone()
-    return _price_cat(conn, c) if c else None
+def price_cat(db_or_doc, cid):
+    for c in price_cats(db_or_doc):
+        if c["id"] == cid:
+            return c
+    return None
 
 
-def _product(r):
-    return {"id": r["id"], "name": r["name"], "desc": r["desc"], "price": r["price"], "slot": r["slot"]}
+def _product(p):
+    return {
+        "id": p["id"],
+        "name": p["name"],
+        "desc": p.get("desc", ""),
+        "price": p.get("price", ""),
+        "slot": p.get("slot", ""),
+    }
 
 
-def products(conn):
-    return [_product(r) for r in _all(conn, "SELECT * FROM products ORDER BY sort")]
+def products(db_or_doc):
+    doc = _site(db_or_doc)
+    return [_product(p) for p in doc.get("products", [])]
 
 
-def product(conn, pid):
-    r = conn.execute("SELECT * FROM products WHERE id=?", (pid,)).fetchone()
-    return _product(r) if r else None
+def product(db_or_doc, pid):
+    for p in products(db_or_doc):
+        if p["id"] == pid:
+            return p
+    return None
 
 
-def images(conn):
-    return {r["slot"]: {"label": r["label"], "group": r["grp"], "src": r["src"]}
-            for r in _all(conn, "SELECT * FROM images ORDER BY sort")}
+def images(db_or_doc):
+    doc = _site(db_or_doc)
+    imgs = doc.get("images", {})
+    return {
+        slot: {
+            "label": im["label"],
+            "group": im.get("group", im.get("grp")),
+            "src": im["src"],
+        }
+        for slot, im in imgs.items()
+    }
 
 
-def gallery(conn):
-    return [{"id": r["id"], "slot": r["slot"], "cat": r["cat"], "cap": r["cap"]}
-            for r in _all(conn, "SELECT * FROM gallery ORDER BY sort")]
+def gallery(db_or_doc):
+    doc = _site(db_or_doc)
+    return [
+        {
+            "id": g["id"],
+            "slot": g.get("slot"),
+            "cat": g.get("cat"),
+            "cap": g.get("cap"),
+        }
+        for g in doc.get("gallery", [])
+    ]
