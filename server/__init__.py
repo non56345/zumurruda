@@ -103,16 +103,9 @@ def create_app(overrides=None):
 
     @app.errorhandler(404)
     def _not_found(_e):
-        return jsonify(
-            path=request.path,
-            path_info=request.environ.get("PATH_INFO"),
-            script_name=request.environ.get("SCRIPT_NAME"),
-            x_matched_path=request.headers.get("x-matched-path"),
-            x_vercel_path=request.headers.get("x-vercel-path"),
-            x_forwarded_uri=request.headers.get("x-forwarded-uri"),
-            x_invoke_path=request.headers.get("x-invoke-path"),
-            headers=dict(request.headers),
-        ), 404
+        if _is_api():
+            return jsonify(error="not_found", message="المسار غير موجود"), 404
+        return "404 Not Found", 404
 
     @app.errorhandler(413)
     def _too_large(_e):

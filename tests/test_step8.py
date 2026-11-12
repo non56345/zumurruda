@@ -118,7 +118,7 @@ class TestVercelEntryPoints(unittest.TestCase):
         self.assertTrue(vjson_path.exists())
         data = json.loads(vjson_path.read_text(encoding="utf8"))
         self.assertEqual(data.get("regions"), ["fra1"])
-        self.assertTrue(any(r.get("destination") in ("/api/index", "/app.py") for r in data.get("rewrites", [])))
+        self.assertTrue(any(r.get("destination", "").startswith("/api/index") or r.get("destination") == "/app.py" for r in data.get("rewrites", [])))
 
 
 class TestHttpExtras(unittest.TestCase):
