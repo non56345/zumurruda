@@ -92,7 +92,9 @@ class TestEnvFile(unittest.TestCase):
         self.assertFalse(load_env.load(Path("/nonexistent/.env")))
 
     def test_no_env_or_db_shipped(self):
-        self.assertFalse((ROOT / ".env").exists())
+        # التأكد من أن .env غير متتبع في git وداخل .gitignore
+        r = subprocess.run(["git", "ls-files", ".env"], cwd=ROOT, capture_output=True, text=True)
+        self.assertEqual(r.stdout.strip(), "")
         self.assertIn(".env", (ROOT / ".gitignore").read_text())
         ex = (ROOT / ".env.example").read_text(encoding="utf8")
         self.assertNotIn("PASSWORD", ex.upper().replace("كلمة المرور", ""))
