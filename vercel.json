@@ -1,16 +1,4 @@
 {
   "version": 2,
-  "regions": ["fra1"],
-  "functions": {
-    "api/index.py": {
-      "includeFiles": "{index.html,admin/**,images/**,server/templates/**}",
-      "excludeFiles": "{tests/**,docs/**,backup-phase1/**,mongo/**,**/*.md}"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/index?__p=$1"
-    }
-  ]
+  "regions": ["fra1"]
 }

@@ -8,3 +8,6 @@ dependencies = [
     "pymongo[srv]>=4.7",
     "dnspython>=2.6",
 ]
+
+[tool.vercel]
+entrypoint = "app:app"
